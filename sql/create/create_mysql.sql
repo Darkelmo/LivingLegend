@@ -1,13 +1,9 @@
-GRANT USAGE ON * . * TO 'trinity'@'localhost' IDENTIFIED BY 'trinity' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 ;
+GRANT USAGE ON * . * TO 'livinglegend'@'localhost' IDENTIFIED BY 'livinglegend' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0;
 
 CREATE DATABASE `world` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE `chars` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE `logon` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE DATABASE `characters` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-CREATE DATABASE `auth` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-GRANT ALL PRIVILEGES ON `world` . * TO 'trinity'@'localhost' WITH GRANT OPTION;
-
-GRANT ALL PRIVILEGES ON `characters` . * TO 'trinity'@'localhost' WITH GRANT OPTION;
-
-GRANT ALL PRIVILEGES ON `auth` . * TO 'trinity'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `world` . * TO 'livinglegend'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `chars` . * TO 'livinglegend'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `logon` . * TO 'livinglegend'@'localhost' WITH GRANT OPTION;

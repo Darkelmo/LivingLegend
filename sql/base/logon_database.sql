@@ -1,9 +1,3 @@
--- MySQL dump 10.13  Distrib 5.5.22, for Win64 (x86)
---
--- Host: localhost    Database: auth
--- ------------------------------------------------------
--- Server version	5.5.22
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -210,7 +204,7 @@ CREATE TABLE `realmlist` (
 
 LOCK TABLES `realmlist` WRITE;
 /*!40000 ALTER TABLE `realmlist` DISABLE KEYS */;
-INSERT INTO `realmlist` VALUES (1,'Trinity','127.0.0.1',8085,1,0,1,0,0,12340);
+INSERT INTO `realmlist` VALUES (1, 'Living Legend', '127.0.0.1', 8080, 1, 0, 1, 0, 0, 12340);
 /*!40000 ALTER TABLE `realmlist` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -248,5 +242,3 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2012-03-28 18:26:06

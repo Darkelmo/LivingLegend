@@ -1,9 +1,3 @@
--- MySQL dump 10.13  Distrib 5.5.21, for Win64 (x86)
---
--- Host: localhost    Database: characters
--- ------------------------------------------------------
--- Server version	5.5.21
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -2262,7 +2256,11 @@ CREATE TABLE `worldstates` (
 
 LOCK TABLES `worldstates` WRITE;
 /*!40000 ALTER TABLE `worldstates` DISABLE KEYS */;
-INSERT INTO `worldstates` VALUES (20001,0,'NextArenaPointDistributionTime'),(20002,0,'NextWeeklyQuestResetTime'),(20003,0,'NextBGRandomDailyResetTime'),(20004,0,'cleaning_flags');
+INSERT INTO `worldstates` VALUES
+(20001, 0, 'NextArenaPointDistributionTime'),
+(20002, 0, 'NextWeeklyQuestResetTime'),
+(20003, 0, 'NextBGRandomDailyResetTime'),
+(20004, 0, 'cleaning_flags');
 /*!40000 ALTER TABLE `worldstates` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -2274,5 +2272,3 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2012-03-25 21:14:19
