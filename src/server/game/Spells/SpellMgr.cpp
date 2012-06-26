@@ -2952,6 +2952,12 @@ void SpellMgr::LoadDbcDataCorrections()
                     if (!spellInfo->speed && !spellInfo->SpellFamilyName)
                         spellInfo->speed = SPEED_CHARGE;
                     break;
+                case SPELL_EFFECT_APPLY_GLYPH:
+                    spellInfo->CastingTimeIndex = 1;
+                    break;
+                case SPELL_EFFECT_ENCHANT_ITEM:
+                    spellInfo->CastingTimeIndex = 1;
+                    break;
             }
         }
 
