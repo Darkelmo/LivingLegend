@@ -77,12 +77,6 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
 
     Player* player = _player;
 
-    if (player->getLevel() < sWorld->getIntConfig(CONFIG_MAIL_LEVEL_REQ))
-    {
-        SendNotification(GetTrinityString(LANG_MAIL_SENDER_REQ), sWorld->getIntConfig(CONFIG_MAIL_LEVEL_REQ));
-        return;
-    }
-
     uint64 rc = 0;
     if (normalizePlayerName(receiver))
         rc = sObjectMgr->GetPlayerGUIDByName(receiver);
@@ -175,15 +169,9 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
         }
     }
 
-    if (!accountBound && !sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_MAIL) && player->GetTeam() != rc_team && AccountMgr::IsPlayerAccount(GetSecurity()))
+    if (!accountBound)
     {
         player->SendMailResult(0, MAIL_SEND, MAIL_ERR_NOT_YOUR_TEAM);
-        return;
-    }
-
-    if (receiveLevel < sWorld->getIntConfig(CONFIG_MAIL_LEVEL_REQ))
-    {
-        SendNotification(GetTrinityString(LANG_MAIL_RECEIVER_REQ), sWorld->getIntConfig(CONFIG_MAIL_LEVEL_REQ));
         return;
     }
 
@@ -261,7 +249,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
             for (uint8 i = 0; i < items_count; ++i)
             {
                 Item* item = items[i];
-                if (!AccountMgr::IsPlayerAccount(GetSecurity()) && sWorld->getBoolConfig(CONFIG_GM_LOG_TRADE))
+                if (!AccountMgr::IsPlayerAccount(GetSecurity()))
                 {
                     sLog->outCommand(GetAccountId(), "GM %s (Account: %u) mail item: %s (Entry: %u Count: %u) to player: %s (Account: %u)",
                         GetPlayerName(), GetAccountId(), item->GetTemplate()->Name1.c_str(), item->GetEntry(), item->GetCount(), receiver.c_str(), rc_account);
@@ -281,7 +269,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data)
             needItemDelay = player->GetSession()->GetAccountId() != rc_account;
         }
 
-        if (money > 0 && !AccountMgr::IsPlayerAccount(GetSecurity()) && sWorld->getBoolConfig(CONFIG_GM_LOG_TRADE))
+        if (money > 0 && !AccountMgr::IsPlayerAccount(GetSecurity()))
         {
             sLog->outCommand(GetAccountId(), "GM %s (Account: %u) mail money: %u to player: %s (Account: %u)",
                 GetPlayerName(), GetAccountId(), money, receiver.c_str(), rc_account);
@@ -462,7 +450,7 @@ void WorldSession::HandleMailTakeItem(WorldPacket & recv_data)
 
             uint32 sender_accId = 0;
 
-            if (!AccountMgr::IsPlayerAccount(GetSecurity()) && sWorld->getBoolConfig(CONFIG_GM_LOG_TRADE))
+            if (!AccountMgr::IsPlayerAccount(GetSecurity()))
             {
                 std::string sender_name;
                 if (receive)

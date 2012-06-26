@@ -35,7 +35,6 @@ namespace VMAP
     {
         VMAP_LOAD_RESULT_ERROR,
         VMAP_LOAD_RESULT_OK,
-        VMAP_LOAD_RESULT_IGNORED,
     };
 
     #define VMAP_INVALID_HEIGHT       -100000.0f            // for check
@@ -44,12 +43,8 @@ namespace VMAP
     //===========================================================
     class IVMapManager
     {
-        private:
-            bool iEnableLineOfSightCalc;
-            bool iEnableHeightCalc;
-
         public:
-            IVMapManager() : iEnableLineOfSightCalc(true), iEnableHeightCalc(true) {}
+            IVMapManager() {}
 
             virtual ~IVMapManager(void) {}
 
@@ -71,21 +66,6 @@ namespace VMAP
             send debug commands
             */
             virtual bool processCommand(char *pCommand)= 0;
-
-            /**
-            Enable/disable LOS calculation
-            It is enabled by default. If it is enabled in mid game the maps have to loaded manualy
-            */
-            void setEnableLineOfSightCalc(bool pVal) { iEnableLineOfSightCalc = pVal; }
-            /**
-            Enable/disable model height calculation
-            It is enabled by default. If it is enabled in mid game the maps have to loaded manualy
-            */
-            void setEnableHeightCalc(bool pVal) { iEnableHeightCalc = pVal; }
-
-            bool isLineOfSightCalcEnabled() const { return(iEnableLineOfSightCalc); }
-            bool isHeightCalcEnabled() const { return(iEnableHeightCalc); }
-            bool isMapLoadingEnabled() const { return(iEnableLineOfSightCalc || iEnableHeightCalc  ); }
 
             virtual std::string getDirFileName(unsigned int pMapId, int x, int y) const =0;
             /**

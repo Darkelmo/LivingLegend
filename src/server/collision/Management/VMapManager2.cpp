@@ -75,14 +75,12 @@ namespace VMAP
 
     int VMapManager2::loadMap(const char* basePath, unsigned int mapId, int x, int y)
     {
-        int result = VMAP_LOAD_RESULT_IGNORED;
-        if (isMapLoadingEnabled())
-        {
-            if (_loadMap(mapId, basePath, x, y))
-                result = VMAP_LOAD_RESULT_OK;
-            else
-                result = VMAP_LOAD_RESULT_ERROR;
-        }
+        int result = VMAP_LOAD_RESULT_ERROR;
+
+        if (_loadMap(mapId, basePath, x, y))
+            int result = VMAP_LOAD_RESULT_OK;
+        else
+            int result = VMAP_LOAD_RESULT_ERROR;
 
         return result;
     }
@@ -133,7 +131,7 @@ namespace VMAP
 
     bool VMapManager2::isInLineOfSight(unsigned int mapId, float x1, float y1, float z1, float x2, float y2, float z2)
     {
-        if (!isLineOfSightCalcEnabled() || DisableMgr::IsDisabledFor(DISABLE_TYPE_VMAP, mapId, NULL, VMAP_DISABLE_LOS))
+        if (DisableMgr::IsDisabledFor(DISABLE_TYPE_VMAP, mapId, NULL, VMAP_DISABLE_LOS))
             return true;
 
         InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(mapId);
@@ -156,7 +154,7 @@ namespace VMAP
     */
     bool VMapManager2::getObjectHitPos(unsigned int mapId, float x1, float y1, float z1, float x2, float y2, float z2, float& rx, float &ry, float& rz, float modifyDist)
     {
-        if (isLineOfSightCalcEnabled() && !DisableMgr::IsDisabledFor(DISABLE_TYPE_VMAP, mapId, NULL, VMAP_DISABLE_LOS))
+        if (!DisableMgr::IsDisabledFor(DISABLE_TYPE_VMAP, mapId, NULL, VMAP_DISABLE_LOS))
         {
             InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(mapId);
             if (instanceTree != iInstanceMapTrees.end())
@@ -186,7 +184,7 @@ namespace VMAP
 
     float VMapManager2::getHeight(unsigned int mapId, float x, float y, float z, float maxSearchDist)
     {
-        if (isHeightCalcEnabled() && !DisableMgr::IsDisabledFor(DISABLE_TYPE_VMAP, mapId, NULL, VMAP_DISABLE_HEIGHT))
+        if (!DisableMgr::IsDisabledFor(DISABLE_TYPE_VMAP, mapId, NULL, VMAP_DISABLE_HEIGHT))
         {
             InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(mapId);
             if (instanceTree != iInstanceMapTrees.end())

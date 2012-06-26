@@ -616,10 +616,9 @@ void Creature::RegenerateMana()
     {
         if (!IsUnderLastManaUseEffect())
         {
-            float ManaIncreaseRate = sWorld->getRate(RATE_POWER_MANA);
             float Spirit = GetStat(STAT_SPIRIT);
 
-            addvalue = uint32((Spirit / 5.0f + 17.0f) * ManaIncreaseRate);
+            addvalue = uint32(Spirit / 5.0f + 17.0f);
         }
     }
     else
@@ -652,13 +651,12 @@ void Creature::RegenerateHealth()
     // Not only pet, but any controlled creature
     if (GetCharmerOrOwnerGUID())
     {
-        float HealthIncreaseRate = sWorld->getRate(RATE_HEALTH);
         float Spirit = GetStat(STAT_SPIRIT);
 
         if (GetPower(POWER_MANA) > 0)
-            addvalue = uint32(Spirit * 0.25 * HealthIncreaseRate);
+            addvalue = uint32(Spirit * 0.2);
         else
-            addvalue = uint32(Spirit * 0.80 * HealthIncreaseRate);
+            addvalue = uint32(Spirit * 0.80);
     }
     else
         addvalue = maxValue/3;
@@ -681,31 +679,25 @@ void Creature::DoFleeToGetAssistance()
     if (HasAuraType(SPELL_AURA_PREVENTS_FLEEING))
         return;
 
-    float radius = sWorld->getFloatConfig(CONFIG_CREATURE_FAMILY_FLEE_ASSISTANCE_RADIUS);
-    if (radius >0)
-    {
-        Creature* creature = NULL;
+    Creature* creature = NULL;
 
-        CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
-        Cell cell(p);
-        cell.SetNoCreate();
-        Trinity::NearestAssistCreatureInCreatureRangeCheck u_check(this, getVictim(), radius);
-        Trinity::CreatureLastSearcher<Trinity::NearestAssistCreatureInCreatureRangeCheck> searcher(this, creature, u_check);
+    CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
+    Cell cell(p);
+    cell.SetNoCreate();
+    Trinity::NearestAssistCreatureInCreatureRangeCheck u_check(this, getVictim(), 30);
+    Trinity::CreatureLastSearcher<Trinity::NearestAssistCreatureInCreatureRangeCheck> searcher(this, creature, u_check);
 
-        TypeContainerVisitor<Trinity::CreatureLastSearcher<Trinity::NearestAssistCreatureInCreatureRangeCheck>, GridTypeMapContainer > grid_creature_searcher(searcher);
+    TypeContainerVisitor<Trinity::CreatureLastSearcher<Trinity::NearestAssistCreatureInCreatureRangeCheck>, GridTypeMapContainer > grid_creature_searcher(searcher);
 
-        cell.Visit(p, grid_creature_searcher, *GetMap(), *this, radius);
+    cell.Visit(p, grid_creature_searcher, *GetMap(), *this, 30);
 
-        SetNoSearchAssistance(true);
-        UpdateSpeed(MOVE_RUN, false);
+    SetNoSearchAssistance(true);
+    UpdateSpeed(MOVE_RUN, false);
 
-        if (!creature)
-            //SetFeared(true, getVictim()->GetGUID(), 0, sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_FLEE_DELAY));
-            //TODO: use 31365
-            SetControlled(true, UNIT_STATE_FLEEING);
-        else
-            GetMotionMaster()->MoveSeekAssistance(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ());
-    }
+    if (!creature)
+        SetControlled(true, UNIT_STATE_FLEEING);
+    else
+        GetMotionMaster()->MoveSeekAssistance(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ());
 }
 
 bool Creature::AIM_Initialize(CreatureAI* ai)
@@ -1466,7 +1458,7 @@ bool Creature::canStartAttack(Unit const* who, bool force) const
 
         if (who->isInCombat() && IsWithinDist(who, ATTACK_DISTANCE))
             if (Unit* victim = who->getAttackerForHelper())
-                if (IsWithinDistInMap(victim, sWorld->getFloatConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS)))
+                if (IsWithinDistInMap(victim, 10))
                     force = true;
 
         if (!force && (IsNeutralToAll() || !IsWithinDistInMap(who, GetAttackDistance(who) + m_CombatDistance)))
@@ -1481,10 +1473,6 @@ bool Creature::canStartAttack(Unit const* who, bool force) const
 
 float Creature::GetAttackDistance(Unit const* player) const
 {
-    float aggroRate = sWorld->getRate(RATE_CREATURE_AGGRO);
-    if (aggroRate == 0)
-        return 0.0f;
-
     uint32 playerlevel   = player->getLevelForTarget(this);
     uint32 creaturelevel = getLevelForTarget(player);
 
@@ -1501,7 +1489,7 @@ float Creature::GetAttackDistance(Unit const* player) const
     // radius grow if playlevel < creaturelevel
     RetDistance -= (float)leveldif;
 
-    if (creaturelevel+5 <= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+    if (creaturelevel+5 <= 80)
     {
         // detect range auras
         RetDistance += GetTotalAuraModifier(SPELL_AURA_MOD_DETECT_RANGE);
@@ -1514,7 +1502,7 @@ float Creature::GetAttackDistance(Unit const* player) const
     if (RetDistance < 5)
         RetDistance = 5;
 
-    return (RetDistance*aggroRate);
+    return (RetDistance);
 }
 
 void Creature::setDeathState(DeathState s)
@@ -1526,9 +1514,7 @@ void Creature::setDeathState(DeathState s)
         m_corpseRemoveTime = time(NULL) + m_corpseDelay;
         m_respawnTime = time(NULL) + m_respawnDelay + m_corpseDelay;
 
-        // always save boss respawn time at death to prevent crash cheating
-        if (sWorld->getBoolConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || isWorldBoss())
-            SaveRespawnTime();
+        SaveRespawnTime();
 
         SetTarget(0);                // remove target selection in any cases (can be set at aura remove in Unit::setDeathState)
         SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
@@ -1881,36 +1867,31 @@ void Creature::CallAssistance()
     {
         SetNoCallAssistance(true);
 
-        float radius = sWorld->getFloatConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_RADIUS);
+        std::list<Creature*> assistList;
 
-        if (radius > 0)
         {
-            std::list<Creature*> assistList;
+            CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
+            Cell cell(p);
+            cell.SetNoCreate();
 
+            Trinity::AnyAssistCreatureInRangeCheck u_check(this, getVictim(), 10);
+            Trinity::CreatureListSearcher<Trinity::AnyAssistCreatureInRangeCheck> searcher(this, assistList, u_check);
+
+            TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AnyAssistCreatureInRangeCheck>, GridTypeMapContainer >  grid_creature_searcher(searcher);
+
+            cell.Visit(p, grid_creature_searcher, *GetMap(), *this, 10);
+        }
+
+        if (!assistList.empty())
+        {
+            AssistDelayEvent* e = new AssistDelayEvent(getVictim()->GetGUID(), *this);
+            while (!assistList.empty())
             {
-                CellCoord p(Trinity::ComputeCellCoord(GetPositionX(), GetPositionY()));
-                Cell cell(p);
-                cell.SetNoCreate();
-
-                Trinity::AnyAssistCreatureInRangeCheck u_check(this, getVictim(), radius);
-                Trinity::CreatureListSearcher<Trinity::AnyAssistCreatureInRangeCheck> searcher(this, assistList, u_check);
-
-                TypeContainerVisitor<Trinity::CreatureListSearcher<Trinity::AnyAssistCreatureInRangeCheck>, GridTypeMapContainer >  grid_creature_searcher(searcher);
-
-                cell.Visit(p, grid_creature_searcher, *GetMap(), *this, radius);
+                // Pushing guids because in delay can happen some creature gets despawned => invalid pointer
+                e->AddAssistant((*assistList.begin())->GetGUID());
+                assistList.pop_front();
             }
-
-            if (!assistList.empty())
-            {
-                AssistDelayEvent* e = new AssistDelayEvent(getVictim()->GetGUID(), *this);
-                while (!assistList.empty())
-                {
-                    // Pushing guids because in delay can happen some creature gets despawned => invalid pointer
-                    e->AddAssistant((*assistList.begin())->GetGUID());
-                    assistList.pop_front();
-                }
-                m_Events.AddEvent(e, m_Events.CalculateTime(sWorld->getIntConfig(CONFIG_CREATURE_FAMILY_ASSISTANCE_DELAY)));
-            }
+            m_Events.AddEvent(e, m_Events.CalculateTime(1500));
         }
     }
 }
@@ -2039,7 +2020,7 @@ bool Creature::canCreatureAttack(Unit const* victim, bool /*force*/) const
         return true;
 
     //Use AttackDistance in distance check if threat radius is lower. This prevents creature bounce in and out of combat every update tick.
-    float dist = std::max(GetAttackDistance(victim), sWorld->getFloatConfig(CONFIG_THREAT_RADIUS)) + m_CombatDistance;
+    float dist = std::max(GetAttackDistance(victim), 60.0f) + m_CombatDistance;
 
     if (Unit* unit = GetCharmerOrOwner())
         return victim->IsWithinDist(unit, dist);
@@ -2304,7 +2285,7 @@ uint8 Creature::getLevelForTarget(WorldObject const* target) const
     if (!isWorldBoss() || !target->ToUnit())
         return Unit::getLevelForTarget(target);
 
-    uint16 level = target->ToUnit()->getLevel() + sWorld->getIntConfig(CONFIG_WORLD_BOSS_LEVEL_DIFF);
+    uint16 level = target->ToUnit()->getLevel() + 3;
     if (level < 1)
         return 1;
     if (level > 255)

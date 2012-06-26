@@ -71,7 +71,6 @@ void usage(const char *prog)
 // Launch the auth server
 extern int main(int argc, char **argv)
 {
-    sLog->SetLogDB(false);
     // Command line parsing to get the configuration file name
     char const* cfg_file = _TRINITY_REALM_CONFIG;
     int c = 1;
@@ -131,11 +130,6 @@ extern int main(int argc, char **argv)
     if (!StartDB())
         return 1;
 
-    // Initialize the log database
-    sLog->SetLogDBLater(ConfigMgr::GetBoolDefault("EnableLogDB", false)); // set var to enable DB logging once startup finished.
-    sLog->SetLogDB(false);
-    sLog->SetRealmID(0);                                               // ensure we've set realm to 0 (authserver realmid)
-
     // Get the list of realms for the server
     sRealmList->Initialize(ConfigMgr::GetIntDefault("RealmsStateUpdateDelay", 20));
     if (sRealmList->size() == 0)
@@ -148,13 +142,12 @@ extern int main(int argc, char **argv)
     RealmAcceptor acceptor;
 
     uint16 rmport = ConfigMgr::GetIntDefault("RealmServerPort", 3724);
-    std::string bind_ip = ConfigMgr::GetStringDefault("BindIP", "0.0.0.0");
 
-    ACE_INET_Addr bind_addr(rmport, bind_ip.c_str());
+    ACE_INET_Addr bind_addr(rmport, "0.0.0.0");
 
     if (acceptor.open(bind_addr, ACE_Reactor::instance(), ACE_NONBLOCK) == -1)
     {
-        sLog->outError("Auth server can not bind to %s:%d", bind_ip.c_str(), rmport);
+        sLog->outError("Auth server can not bind to %s:%d", "0.0.0.0", rmport);
         return 1;
     }
 
@@ -207,17 +200,6 @@ extern int main(int argc, char **argv)
     // maximum counter for next ping
     uint32 numLoops = (ConfigMgr::GetIntDefault("MaxPingTime", 30) * (MINUTE * 1000000 / 100000));
     uint32 loopCounter = 0;
-
-    // possibly enable db logging; avoid massive startup spam by doing it here.
-    if (sLog->GetLogDBLater())
-    {
-        sLog->outString("Enabling database logging...");
-        sLog->SetLogDBLater(false);
-        // login db needs thread for logging
-        sLog->SetLogDB(true);
-    }
-    else
-        sLog->SetLogDB(false);
 
     // Wait for termination signal
     while (!stopEvent)

@@ -246,17 +246,6 @@ WorldSocketMgr::StartReactiveIO (ACE_UINT16 port, const char* address)
 
     sLog->outBasic ("Max allowed socket connections %d", ACE::max_handles());
 
-    // -1 means use default
-    m_SockOutKBuff = ConfigMgr::GetIntDefault ("Network.OutKBuff", -1);
-
-    m_SockOutUBuff = ConfigMgr::GetIntDefault ("Network.OutUBuff", 65536);
-
-    if (m_SockOutUBuff <= 0)
-    {
-        sLog->outError("Network.OutUBuff is wrong in your config file");
-        return -1;
-    }
-
     m_Acceptor = new WorldSocketAcceptor;
 
     ACE_INET_Addr listen_addr (port, address);
@@ -319,19 +308,6 @@ WorldSocketMgr::Wait()
 int
 WorldSocketMgr::OnSocketOpen (WorldSocket* sock)
 {
-    // set some options here
-    if (m_SockOutKBuff >= 0)
-    {
-        if (sock->peer().set_option (SOL_SOCKET,
-            SO_SNDBUF,
-            (void*) & m_SockOutKBuff,
-            sizeof (int)) == -1 && errno != ENOTSUP)
-        {
-            sLog->outError("WorldSocketMgr::OnSocketOpen set_option SO_SNDBUF");
-            return -1;
-        }
-    }
-
     static const int ndoption = 1;
 
     // Set TCP_NODELAY.

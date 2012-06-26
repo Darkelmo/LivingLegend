@@ -582,9 +582,7 @@ void GameObject::Update(uint32 diff)
 
             m_respawnTime = time(NULL) + m_respawnDelayTime;
 
-            // if option not set then object will be saved at grid unload
-            if (sWorld->getBoolConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY))
-                SaveRespawnTime();
+            SaveRespawnTime();
 
             UpdateObjectVisibility();
 

@@ -117,13 +117,6 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket & recv_data)
     }
     else
     {
-        // TODO: find correct opcode
-        if (_player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
-        {
-            SendNotification(LANG_ARENA_ONE_TOOLOW, sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
-            return;
-        }
-
         switch (clientIndex)                                 // arenaSlot+1 as received from client (1 from 3 case)
         {
             case 1:
@@ -504,12 +497,6 @@ void WorldSession::HandlePetitionSignOpcode(WorldPacket & recv_data)
 
     if (type != GUILD_CHARTER_TYPE)
     {
-        if (_player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
-        {
-            SendArenaTeamCommandResult(ERR_ARENA_TEAM_CREATE_S, "", _player->GetName(), ERR_ARENA_TEAM_TARGET_TOO_LOW_S);
-            return;
-        }
-
         uint8 slot = ArenaTeam::GetSlotByType(type);
         if (slot >= MAX_ARENA_SLOT)
             return;
@@ -668,13 +655,6 @@ void WorldSession::HandleOfferPetitionOpcode(WorldPacket & recv_data)
 
     if (type != GUILD_CHARTER_TYPE)
     {
-        if (player->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
-        {
-            // player is too low level to join an arena team
-            SendArenaTeamCommandResult(ERR_ARENA_TEAM_CREATE_S, player->GetName(), "", ERR_ARENA_TEAM_TARGET_TOO_LOW_S);
-            return;
-        }
-
         uint8 slot = ArenaTeam::GetSlotByType(type);
         if (slot >= MAX_ARENA_SLOT)
             return;

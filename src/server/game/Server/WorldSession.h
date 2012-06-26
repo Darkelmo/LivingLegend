@@ -382,7 +382,7 @@ class WorldSession
         }
         void ResetTimeOutTime()
         {
-            m_timeOutTime = sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME);
+            m_timeOutTime = 900000;
         }
         bool IsConnectionIdle() const
         {

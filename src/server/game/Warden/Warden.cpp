@@ -98,21 +98,15 @@ void Warden::Update()
 
         if (_dataSent)
         {
-            uint32 maxClientResponseDelay = sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_RESPONSE_DELAY);
-
-            if (maxClientResponseDelay > 0)
+            // Kick player if client response delays more than set in config
+            if (_clientResponseTimer > 600000)
             {
-                // Kick player if client response delays more than set in config
-                if (_clientResponseTimer > maxClientResponseDelay * IN_MILLISECONDS)
-                {
-                    sLog->outWarden("WARDEN: Player %s (guid: %u, account: %u, latency: %u, IP: %s) exceeded Warden module response delay for more than %s - disconnecting client",
-                                   _session->GetPlayerName(), _session->GetGuidLow(), _session->GetAccountId(), _session->GetLatency(), _session->GetRemoteAddress().c_str(),
-                                   secsToTimeString(maxClientResponseDelay, true).c_str());
-                    _session->KickPlayer();
-                }
-                else
-                    _clientResponseTimer += diff;
+                sLog->outWarden("WARDEN: Player %s (guid: %u, account: %u, latency: %u, IP: %s) exceeded Warden module response delay for more than 600 - disconnecting client",
+                               _session->GetPlayerName(), _session->GetGuidLow(), _session->GetAccountId(), _session->GetLatency(), _session->GetRemoteAddress().c_str());
+                _session->KickPlayer();
             }
+            else
+                _clientResponseTimer += diff;
         }
         else
         {

@@ -118,7 +118,6 @@ class Log
         void ResetColor(bool stdout_stream);
 
         void outErrorST(const char * err, ...)                  ATTR_PRINTF(2, 3);
-        void outDB(LogTypes type, const char * str);
         void outString(const char * str, ...)                   ATTR_PRINTF(2, 3);
         void outString();
         void outStringInLine(const char * str, ...)             ATTR_PRINTF(2, 3);
@@ -145,17 +144,11 @@ class Log
 
         void SetLogLevel(char * Level);
         void SetLogFileLevel(char * Level);
-        void SetDBLogLevel(char * Level);
         void SetSQLDriverQueryLogging(bool newStatus) { m_sqlDriverQueryLogging = newStatus; }
-        void SetRealmID(uint32 id) { realm = id; }
 
         bool IsOutDebug() const { return m_logLevel > 2 || (m_logFileLevel > 2 && logfile); }
         bool IsOutCharDump() const { return m_charLog_Dump; }
 
-        bool GetLogDB() const { return m_enableLogDB; }
-        bool GetLogDBLater() const { return m_enableLogDBLater; }
-        void SetLogDB(bool enable) { m_enableLogDB = enable; }
-        void SetLogDBLater(bool value) { m_enableLogDBLater = value; }
         bool GetSQLDriverQueryLogging() const { return m_sqlDriverQueryLogging; }
     private:
         FILE* openLogFile(char const* configFileName, char const* configTimeStampFlag, char const* mode);
@@ -180,10 +173,6 @@ class Log
         bool m_gmlog_per_account;
         std::string m_gmlog_filename_format;
 
-        bool m_enableLogDBLater;
-        bool m_enableLogDB;
-        uint32 realm;
-
         // log coloring
         bool m_colored;
         ColorTypes m_colors[4];
@@ -194,13 +183,8 @@ class Log
 
         // log levels:
         // 0 minimum/string, 1 basic/error, 2 detail, 3 full/debug
-        uint8 m_dbLogLevel;
         uint8 m_logLevel;
         uint8 m_logFileLevel;
-        bool m_dbChar;
-        bool m_dbRA;
-        bool m_dbGM;
-        bool m_dbChat;
         bool m_charLog_Dump;
         bool m_charLog_Dump_Separate;
         std::string m_dumpsDir;

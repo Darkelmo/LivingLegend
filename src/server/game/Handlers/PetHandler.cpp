@@ -195,11 +195,8 @@ void WorldSession::HandlePetActionHelper(Unit* pet, uint64 guid1, uint16 spellid
                             return;
 
                     // Not let attack through obstructions
-                    if (sWorld->getBoolConfig(CONFIG_PET_LOS))
-                    {
-                        if (!pet->IsWithinLOSInMap(TargetUnit))
-                            return;
-                    }
+                    if (!pet->IsWithinLOSInMap(TargetUnit))
+                        return;
 
                     pet->ClearUnitState(UNIT_STATE_FOLLOW);
                     // This is true if pet has no target or has target but targets differs.

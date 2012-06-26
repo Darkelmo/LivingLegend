@@ -157,7 +157,6 @@ class Channel
     uint8       m_flags;
     uint32      m_channelId;
     uint64      m_ownerGUID;
-    bool        m_IsSaved;
 
     private:
         // initial packet data (notify type and channel name)
@@ -204,9 +203,6 @@ class Channel
 
         bool IsOn(uint64 who) const { return players.find(who) != players.end(); }
         bool IsBanned(uint64 guid) const { return banned.find(guid) != banned.end(); }
-
-        void UpdateChannelInDB() const;
-        void UpdateChannelUseageInDB() const;
 
         uint8 GetPlayerFlags(uint64 p) const
         {
@@ -282,7 +278,6 @@ class Channel
         void JoinNotify(uint64 guid);                                           // invisible notify
         void LeaveNotify(uint64 guid);                                          // invisible notify
         void SetOwnership(bool ownership) { m_ownership = ownership; };
-        static void CleanOldChannelsInDB();
 };
 #endif
 

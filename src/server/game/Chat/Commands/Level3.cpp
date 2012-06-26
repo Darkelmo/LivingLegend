@@ -1953,14 +1953,6 @@ bool ChatHandler::HandleChangeWeather(const char *args)
     if (!*args)
         return false;
 
-    //Weather is OFF
-    if (!sWorld->getBoolConfig(CONFIG_WEATHER))
-    {
-        SendSysMessage(LANG_WEATHER_DISABLED);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
     // *Change the weather of a cell
     char* px = strtok((char*)args, " ");
     char* py = strtok(NULL, " ");
@@ -2069,13 +2061,8 @@ bool ChatHandler::HandleResetLevelCommand(const char * args)
 
     uint8 oldLevel = target->getLevel();
 
-    // set starting level
-    uint32 start_level = target->getClass() != CLASS_DEATH_KNIGHT
-        ? sWorld->getIntConfig(CONFIG_START_PLAYER_LEVEL)
-        : sWorld->getIntConfig(CONFIG_START_HEROIC_PLAYER_LEVEL);
-
     target->_ApplyAllLevelScaleItemMods(false);
-    target->SetLevel(start_level);
+    target->SetLevel(80);
     target->InitRunes();
     target->InitStatsForLevel(true);
     target->InitTaxiNodesForLevel();
@@ -3414,20 +3401,14 @@ bool ChatHandler::HandleChannelSetOwnership(const char *args)
     {
         if (chn)
             chn->SetOwnership(true);
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHANNEL_OWNERSHIP);
-        stmt->setUInt8 (0, 1);
-        stmt->setString(1, channel);
-        CharacterDatabase.Execute(stmt);
+
         PSendSysMessage(LANG_CHANNEL_ENABLE_OWNERSHIP, channel);
     }
     else if (strcmp(argstr, "off") == 0)
     {
         if (chn)
             chn->SetOwnership(false);
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHANNEL_OWNERSHIP);
-        stmt->setUInt8 (0, 0);
-        stmt->setString(1, channel);
-        CharacterDatabase.Execute(stmt);
+
         PSendSysMessage(LANG_CHANNEL_DISABLE_OWNERSHIP, channel);
     }
     else

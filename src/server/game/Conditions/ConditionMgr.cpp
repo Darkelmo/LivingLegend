@@ -1511,7 +1511,7 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 return false;
             }
 
-            if (cond->ConditionValue2 < 1 || cond->ConditionValue2 > sWorld->GetConfigMaxSkillValue())
+            if (cond->ConditionValue2 < 1 || cond->ConditionValue2 > 450)
             {
                 sLog->outErrorDb("Skill condition specifies invalid skill value (%u), skipped", cond->ConditionValue2);
                 return false;

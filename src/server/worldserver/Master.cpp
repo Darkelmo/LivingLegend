@@ -247,19 +247,15 @@ int Master::Run()
     }
 
     ///- Start up freeze catcher thread
-    if (uint32 freeze_delay = ConfigMgr::GetIntDefault("MaxCoreStuckTime", 0))
-    {
-        FreezeDetectorRunnable* fdr = new FreezeDetectorRunnable();
-        fdr->SetDelayTime(freeze_delay*1000);
-        ACE_Based::Thread freeze_thread(fdr);
-        freeze_thread.setPriority(ACE_Based::Highest);
-    }
+    FreezeDetectorRunnable* fdr = new FreezeDetectorRunnable();
+    fdr->SetDelayTime(30000);
+    ACE_Based::Thread freeze_thread(fdr);
+    freeze_thread.setPriority(ACE_Based::Highest);
 
     ///- Launch the world listener socket
     uint16 wsport = sWorld->getIntConfig(CONFIG_PORT_WORLD);
-    std::string bind_ip = ConfigMgr::GetStringDefault("BindIP", "0.0.0.0");
 
-    if (sWorldSocketMgr->StartNetwork(wsport, bind_ip.c_str ()) == -1)
+    if (sWorldSocketMgr->StartNetwork(wsport, "0.0.0.0") == -1)
     {
         sLog->outError("Failed to start network");
         World::StopNow(ERROR_EXIT_CODE);
@@ -356,7 +352,6 @@ bool Master::_StartDB()
 {
     MySQL::Library_Init();
 
-    sLog->SetLogDB(false);
     std::string dbstring;
     uint8 async_threads, synch_threads;
 
@@ -440,11 +435,6 @@ bool Master::_StartDB()
         return false;
     }
     sLog->outString("Realm running as realm ID %d", realmID);
-
-    ///- Initialize the DB logging system
-    sLog->SetLogDBLater(ConfigMgr::GetBoolDefault("EnableLogDB", false)); // set var to enable DB logging once startup finished.
-    sLog->SetLogDB(false);
-    sLog->SetRealmID(realmID);
 
     ///- Clean the database before starting
     ClearOnlineAccounts();

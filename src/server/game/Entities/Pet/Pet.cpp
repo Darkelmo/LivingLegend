@@ -646,7 +646,7 @@ void Creature::Regenerate(Powers power)
         case POWER_FOCUS:
         {
             // For hunter pets.
-            addvalue = 24 * sWorld->getRate(RATE_POWER_FOCUS);
+            addvalue = 24;
             break;
         }
         case POWER_ENERGY:
@@ -707,11 +707,10 @@ void Pet::GivePetXP(uint32 xp)
     if (!isAlive())
         return;
 
-    uint8 maxlevel = std::min((uint8)sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL), GetOwner()->getLevel());
     uint8 petlevel = getLevel();
 
     // If pet is detected to be at, or above(?) the players level, don't hand out XP
-    if (petlevel >= maxlevel)
+    if (petlevel >= 80)
        return;
 
     uint32 nextLvlXP = GetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP);
@@ -719,7 +718,7 @@ void Pet::GivePetXP(uint32 xp)
     uint32 newXP = curXP + xp;
 
     // Check how much XP the pet should receive, and hand off have any left from previous levelups
-    while (newXP >= nextLvlXP && petlevel < maxlevel)
+    while (newXP >= nextLvlXP && petlevel < 80)
     {
         // Subtract newXP from amount needed for nextlevel, and give pet the level
         newXP -= nextLvlXP;
@@ -730,7 +729,7 @@ void Pet::GivePetXP(uint32 xp)
         nextLvlXP = GetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP);
     }
     // Not affected by special conditions - give it new XP
-    SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, petlevel < maxlevel ? newXP : 0);
+    SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, petlevel < 80 ? newXP : 0);
 }
 
 void Pet::GivePetLevel(uint8 level)

@@ -55,7 +55,7 @@ BattlegroundMgr::BattlegroundMgr() : m_AutoDistributionTimeChecker(0), m_ArenaTe
 {
     for (uint32 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; i++)
         m_Battlegrounds[i].clear();
-    m_NextRatedArenaUpdate = sWorld->getIntConfig(CONFIG_ARENA_RATED_UPDATE_TIMER);
+    m_NextRatedArenaUpdate = 5000;
     m_Testing=false;
 }
 
@@ -143,7 +143,7 @@ void BattlegroundMgr::Update(uint32 diff)
     }
 
     // if rating difference counts, maybe force-update queues
-    if (sWorld->getIntConfig(CONFIG_ARENA_MAX_RATING_DIFFERENCE) && sWorld->getIntConfig(CONFIG_ARENA_RATED_UPDATE_TIMER))
+    if (sWorld->getIntConfig(CONFIG_ARENA_MAX_RATING_DIFFERENCE))
     {
         // it's time to force update
         if (m_NextRatedArenaUpdate < diff)
@@ -156,7 +156,7 @@ void BattlegroundMgr::Update(uint32 diff)
                         BATTLEGROUND_AA, BattlegroundBracketId(bracket),
                         BattlegroundMgr::BGArenaType(BattlegroundQueueTypeId(qtype)), true, 0);
 
-            m_NextRatedArenaUpdate = sWorld->getIntConfig(CONFIG_ARENA_RATED_UPDATE_TIMER);
+            m_NextRatedArenaUpdate = 5000;
         }
         else
             m_NextRatedArenaUpdate -= diff;
@@ -1064,7 +1064,7 @@ uint32 BattlegroundMgr::GetRatingDiscardTimer() const
 
 uint32 BattlegroundMgr::GetPrematureFinishTime() const
 {
-    return sWorld->getIntConfig(CONFIG_BATTLEGROUND_PREMATURE_FINISH_TIMER);
+    return 300000;
 }
 
 void BattlegroundMgr::LoadBattleMastersEntry()

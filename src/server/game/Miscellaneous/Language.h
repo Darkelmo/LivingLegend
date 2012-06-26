@@ -27,7 +27,6 @@ enum TrinityStrings
 
     // level 0 chat
     LANG_SYSTEMMESSAGE                  = 3,
-    LANG_EVENTMESSAGE                   = 4,
     LANG_NO_HELP_CMD                    = 5,
     LANG_NO_CMD                         = 6,
     LANG_NO_SUBCMD                      = 7,
@@ -347,7 +346,6 @@ enum TrinityStrings
     LANG_CREATURE_MOVE_DISABLED         = 404,
     LANG_CREATURE_MOVE_ENABLED          = 405,
     LANG_NO_WEATHER                     = 406,
-    LANG_WEATHER_DISABLED               = 407,
 
     LANG_BAN_YOUBANNED                  = 408,
     LANG_BAN_YOUPERMBANNED              = 409,
@@ -958,17 +956,6 @@ enum TrinityStrings
     LANG_FLEE                           = 5030,
     LANG_NPCINFO_AIINFO                 = 5031,
     // Room for more Trinity strings      5032-9999
-
-    // Level requirement notifications
-    LANG_SAY_REQ                        = 6604,
-    LANG_WHISPER_REQ                    = 6605,
-    LANG_CHANNEL_REQ                    = 6606,
-    LANG_AUCTION_REQ                    = 6607,
-    LANG_TICKET_REQ                     = 6608,
-    LANG_TRADE_REQ                      = 6609,
-    LANG_TRADE_OTHER_REQ                = 6610,
-    LANG_MAIL_SENDER_REQ                = 6611,
-    LANG_MAIL_RECEIVER_REQ              = 6612,
 
     // Used for GM Announcements
     LANG_GM_BROADCAST                    = 6613,

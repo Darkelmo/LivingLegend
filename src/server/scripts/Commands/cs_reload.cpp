@@ -733,13 +733,6 @@ public:
 
     static bool HandleReloadWardenactionCommand(ChatHandler* handler, const char* /*args*/)
     {
-        if (!sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED))
-        {
-            handler->SendSysMessage("Warden system disabled by config - reloading warden_action skipped.");
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
         sLog->outString("Re-Loading warden_action Table!");
         sWardenCheckMgr->LoadWardenOverrides();
         handler->SendGlobalGMSysMessage("DB table `warden_action` reloaded.");

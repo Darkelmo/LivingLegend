@@ -27,7 +27,6 @@
 Channel::Channel(const std::string& name, uint32 channel_id, uint32 Team)
  : m_announce(true), m_ownership(true), m_name(name), m_password(""), m_flags(0), m_channelId(channel_id), m_ownerGUID(0), m_Team(Team)
 {
-    m_IsSaved = false;
     // set special flags if built-in channel
     if (ChatChannelsEntry const* ch = sChatChannelsStore.LookupEntry(channel_id)) // check whether it's a built-in channel
     {
@@ -48,97 +47,7 @@ Channel::Channel(const std::string& name, uint32 channel_id, uint32 Team)
             m_flags |= CHANNEL_FLAG_NOT_LFG;
     }
     else                                                    // it's custom channel
-    {
         m_flags |= CHANNEL_FLAG_CUSTOM;
-
-        // If storing custom channels in the db is enabled either load or save the channel
-        if (sWorld->getBoolConfig(CONFIG_PRESERVE_CUSTOM_CHANNELS))
-        {
-            PreparedStatement *stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHANNEL);
-            stmt->setString(0, name);
-            stmt->setUInt32(1, m_Team);
-            PreparedQueryResult result = CharacterDatabase.Query(stmt);
-
-            if (result) //load
-            {
-                Field* fields = result->Fetch();
-                m_announce = fields[0].GetBool();
-                m_ownership = fields[1].GetBool();
-                m_password  = fields[2].GetString();
-                const char* db_BannedList = fields[3].GetCString();
-
-                if (db_BannedList)
-                {
-                    Tokens tokens(db_BannedList, ' ');
-                    Tokens::iterator iter;
-                    for (iter = tokens.begin(); iter != tokens.end(); ++iter)
-                    {
-                        uint64 banned_guid = atol(*iter);
-                        if (banned_guid)
-                        {
-                            sLog->outDebug(LOG_FILTER_CHATSYS, "Channel(%s) loaded banned guid:" UI64FMTD "", name.c_str(), banned_guid);
-                            banned.insert(banned_guid);
-                        }
-                    }
-                }
-            }
-            else // save
-            {
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHANNEL);
-                stmt->setString(0, name);
-                stmt->setUInt32(1, m_Team);
-                CharacterDatabase.Execute(stmt);
-                sLog->outDebug(LOG_FILTER_CHATSYS, "Channel(%s) saved in database", name.c_str());
-            }
-
-            m_IsSaved = true;
-        }
-    }
-}
-
-void Channel::UpdateChannelInDB() const
-{
-    if (m_IsSaved)
-    {
-        std::ostringstream banlist;
-        BannedList::const_iterator iter;
-        for (iter = banned.begin(); iter != banned.end(); ++iter)
-            banlist << (*iter) << ' ';
-
-        std::string banListStr = banlist.str();
-
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHANNEL);
-        stmt->setBool(0, m_announce);
-        stmt->setBool(1, m_ownership);
-        stmt->setString(2, m_password);
-        stmt->setString(3, banListStr);
-        stmt->setString(4, m_name);
-        stmt->setUInt32(5, m_Team);
-        CharacterDatabase.Execute(stmt);
-
-        sLog->outDebug(LOG_FILTER_CHATSYS, "Channel(%s) updated in database", m_name.c_str());
-    }
-
-}
-
-void Channel::UpdateChannelUseageInDB() const
-{
-    PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_CHANNEL_USAGE);
-    stmt->setString(0, m_name);
-    stmt->setUInt32(1, m_Team);
-    CharacterDatabase.Execute(stmt);
-}
-
-void Channel::CleanOldChannelsInDB()
-{
-    if (sWorld->getIntConfig(CONFIG_PRESERVE_CUSTOM_CHANNEL_DURATION) > 0)
-    {
-        PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_OLD_CHANNELS);
-        stmt->setUInt32(0, sWorld->getIntConfig(CONFIG_PRESERVE_CUSTOM_CHANNEL_DURATION) * DAY);
-        CharacterDatabase.Execute(stmt);
-
-        sLog->outDebug(LOG_FILTER_CHATSYS, "Cleaned out unused custom chat channels.");
-    }
 }
 
 void Channel::Join(uint64 p, const char *pass)
@@ -171,19 +80,9 @@ void Channel::Join(uint64 p, const char *pass)
     Player* player = ObjectAccessor::FindPlayer(p);
 
     if (player)
-    {
-        if (HasFlag(CHANNEL_FLAG_LFG) &&
-            sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(player->GetSession()->GetSecurity()) && player->GetGroup())
-        {
-            MakeNotInLfg(&data);
-            SendToOne(&data, p);
-            return;
-        }
-
         player->JoinedChannel(this);
-    }
 
-    if (m_announce && (!player || !AccountMgr::IsGMAccount(player->GetSession()->GetSecurity()) || !sWorld->getBoolConfig(CONFIG_SILENTLY_GM_JOIN_TO_CHANNEL)))
+    if (m_announce && (!player || !AccountMgr::IsGMAccount(player->GetSession()->GetSecurity())))
     {
         MakeJoined(&data, p);
         SendToAll(&data);
@@ -204,10 +103,6 @@ void Channel::Join(uint64 p, const char *pass)
     // Custom channel handling
     if (!IsConstant())
     {
-        // Update last_used timestamp in db
-        if (!players.empty())
-            UpdateChannelUseageInDB();
-
         // If the channel has no owner yet and ownership is allowed, set the new owner.
         if (!m_ownerGUID && m_ownership)
         {
@@ -245,7 +140,7 @@ void Channel::Leave(uint64 p, bool send)
         bool changeowner = players[p].IsOwner();
 
         players.erase(p);
-        if (m_announce && (!player || !AccountMgr::IsGMAccount(player->GetSession()->GetSecurity()) || !sWorld->getBoolConfig(CONFIG_SILENTLY_GM_JOIN_TO_CHANNEL)))
+        if (m_announce && (!player || !AccountMgr::IsGMAccount(player->GetSession()->GetSecurity())))
         {
             WorldPacket data;
             MakeLeft(&data, p);
@@ -256,9 +151,6 @@ void Channel::Leave(uint64 p, bool send)
 
         if (!IsConstant())
         {
-            // Update last_used timestamp in db
-            UpdateChannelUseageInDB();
-
             // If the channel owner left and there are still players inside, pick a new owner
             if (changeowner && m_ownership && !players.empty())
             {
@@ -309,12 +201,11 @@ void Channel::KickOrBan(uint64 good, const char *badname, bool ban)
             bool changeowner = (m_ownerGUID == bad->GetGUID());
 
             WorldPacket data;
-            bool notify = !(AccountMgr::IsGMAccount(sec) && sWorld->getBoolConfig(CONFIG_SILENTLY_GM_JOIN_TO_CHANNEL));
+            bool notify = !(AccountMgr::IsGMAccount(sec));
 
             if (ban && !IsBanned(bad->GetGUID()))
             {
                 banned.insert(bad->GetGUID());
-                UpdateChannelInDB();
 
                 if (notify)
                     MakePlayerBanned(&data, bad->GetGUID(), good);
@@ -373,8 +264,6 @@ void Channel::UnBan(uint64 good, const char *badname)
             WorldPacket data;
             MakePlayerUnbanned(&data, bad->GetGUID(), good);
             SendToAll(&data);
-
-            UpdateChannelInDB();
         }
     }
 }
@@ -407,8 +296,6 @@ void Channel::Password(uint64 p, const char *pass)
         WorldPacket data;
         MakePasswordChanged(&data, p);
         SendToAll(&data);
-
-        UpdateChannelInDB();
     }
 }
 
@@ -614,8 +501,6 @@ void Channel::Announce(uint64 p)
         else
             MakeAnnouncementsOff(&data, p);
         SendToAll(&data);
-
-        UpdateChannelInDB();
     }
 }
 
@@ -743,8 +628,6 @@ void Channel::SetOwner(uint64 guid, bool exclaim)
             MakeOwnerChanged(&data, m_ownerGUID);
             SendToAll(&data);
         }
-
-        UpdateChannelInDB();
     }
 }
 

@@ -801,9 +801,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     Field* fields = result->Fetch();
 
     uint8 expansion = fields[6].GetUInt8();
-    uint32 world_expansion = sWorld->getIntConfig(CONFIG_EXPANSION);
-    if (expansion > world_expansion)
-        expansion = world_expansion;
+    if (expansion > 2)
+        expansion = 2;
 
     N.SetHexStr ("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7");
     g.SetDword (7);
@@ -970,12 +969,10 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     m_Session->ReadAddonsInfo(recvPacket);
 
     // Initialize Warden system only if it is enabled by config
-    if (sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED))
-        m_Session->InitWarden(&k, os);
+    m_Session->InitWarden(&k, os);
 
-    // Sleep this Network thread for
-    uint32 sleepTime = sWorld->getIntConfig(CONFIG_SESSION_ADD_DELAY);
-    ACE_OS::sleep (ACE_Time_Value (0, sleepTime));
+    // Sleep this Network thread
+    ACE_OS::sleep (ACE_Time_Value (0, 10000));
 
     sWorld->AddSession (m_Session);
 

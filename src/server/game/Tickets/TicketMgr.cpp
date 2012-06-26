@@ -220,7 +220,7 @@ TicketMgr::~TicketMgr()
         delete itr->second;
 }
 
-void TicketMgr::Initialize() { SetStatus(sWorld->getBoolConfig(CONFIG_ALLOW_TICKETS)); }
+void TicketMgr::Initialize() { SetStatus(1); }
 
 void TicketMgr::ResetTickets()
 {

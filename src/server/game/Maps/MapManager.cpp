@@ -38,8 +38,8 @@ extern GridState* si_GridStates[];                          // debugging code, s
 
 MapManager::MapManager()
 {
-    i_gridCleanUpDelay = sWorld->getIntConfig(CONFIG_INTERVAL_GRIDCLEAN);
-    i_timer.SetInterval(sWorld->getIntConfig(CONFIG_INTERVAL_MAPUPDATE));
+    i_gridCleanUpDelay = 300000;
+    i_timer.SetInterval(100);
 }
 
 MapManager::~MapManager()
@@ -187,7 +187,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
     if (entry->IsRaid())
     {
         // can only enter in a raid group
-        if ((!group || !group->isRaidGroup()) && !sWorld->getBoolConfig(CONFIG_INSTANCE_IGNORE_RAID))
+        if (!group || !group->isRaidGroup())
         {
             // probably there must be special opcode, because client has this string constant in GlobalStrings.lua
             // TODO: this is not a good place to send the message
@@ -220,7 +220,7 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
                 return false;
             }
             sLog->outDebug(LOG_FILTER_MAPS, "MAP: Player '%s' has corpse in instance '%s' and can enter.", player->GetName(), mapName);
-            player->ResurrectPlayer(0.5f, false);
+            player->ResurrectPlayer(0.5f);
             player->SpawnCorpseBones();
         }
         else
@@ -245,21 +245,6 @@ bool MapManager::CanPlayerEnter(uint32 mapid, Player* player, bool loginCheck)
                     //TODO: send some kind of error message to the player
                     return false;
                 }*/
-    }
-
-    // players are only allowed to enter 5 instances per hour
-    if (entry->IsDungeon() && (!player->GetGroup() || (player->GetGroup() && !player->GetGroup()->isLFGGroup())))
-    {
-        uint32 instaceIdToCheck = 0;
-        if (InstanceSave* save = player->GetInstanceSave(mapid, entry->IsRaid()))
-            instaceIdToCheck = save->GetInstanceId();
-
-        // instanceId can never be 0 - will not be found
-        if (!player->CheckInstanceCount(instaceIdToCheck) && !player->isDead())
-        {
-            player->SendTransferAborted(mapid, TRANSFER_ABORT_TOO_MANY_INSTANCES);
-            return false;
-        }
     }
 
     //Other requirements

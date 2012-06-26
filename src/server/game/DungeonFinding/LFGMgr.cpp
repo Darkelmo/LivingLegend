@@ -35,7 +35,7 @@ LFGMgr::LFGMgr(): m_update(true), m_QueueTimer(0), m_lfgProposalId(1),
 m_WaitTimeAvg(-1), m_WaitTimeTank(-1), m_WaitTimeHealer(-1), m_WaitTimeDps(-1),
 m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTimeDps(0)
 {
-    m_update = sWorld->getBoolConfig(CONFIG_DUNGEON_FINDER_ENABLE);
+    /*m_update = sWorld->getBoolConfig(CONFIG_DUNGEON_FINDER_ENABLE);
     if (m_update)
     {
         new LFGPlayerScript();
@@ -52,7 +52,7 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
                 m_CachedDungeonMap[0].insert(dungeon->ID);
             }
         }
-    }
+    }*/
 }
 
 LFGMgr::~LFGMgr()
@@ -161,10 +161,10 @@ void LFGMgr::LoadRewards()
             continue;
         }
 
-        if (!maxLevel || maxLevel > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+        if (!maxLevel || maxLevel > 80)
         {
             sLog->outErrorDb("Level %u specified for dungeon %u in table `lfg_dungeon_rewards` can never be reached!", maxLevel, dungeonId);
-            maxLevel = sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL);
+            maxLevel = 80;
         }
 
         if (firstQuestId && !sObjectMgr->GetQuestTemplate(firstQuestId))

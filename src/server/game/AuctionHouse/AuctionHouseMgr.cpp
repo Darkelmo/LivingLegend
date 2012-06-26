@@ -49,19 +49,7 @@ AuctionHouseMgr::~AuctionHouseMgr()
 
 AuctionHouseObject* AuctionHouseMgr::GetAuctionsMap(uint32 factionTemplateId)
 {
-    if (sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_AUCTION))
-        return &mNeutralAuctions;
-
-    // team have linked auction houses
-    FactionTemplateEntry const* u_entry = sFactionTemplateStore.LookupEntry(factionTemplateId);
-    if (!u_entry)
-        return &mNeutralAuctions;
-    else if (u_entry->ourMask & FACTION_MASK_ALLIANCE)
-        return &mAllianceAuctions;
-    else if (u_entry->ourMask & FACTION_MASK_HORDE)
-        return &mHordeAuctions;
-    else
-        return &mNeutralAuctions;
+    return &mNeutralAuctions;
 }
 
 uint32 AuctionHouseMgr::GetAuctionDeposit(AuctionHouseEntry const* entry, uint32 time, Item* pItem, uint32 count)
@@ -73,7 +61,7 @@ uint32 AuctionHouseMgr::GetAuctionDeposit(AuctionHouseEntry const* entry, uint32
 
     float multiplier = CalculatePctN(float(entry->depositPercent), 3);
     uint32 timeHr = (((time / 60) / 60) / 12);
-    uint32 deposit = uint32(((multiplier * MSV * count / 3) * timeHr * 3) * sWorld->getRate(RATE_AUCTION_DEPOSIT));
+    uint32 deposit = uint32((multiplier * MSV * count / 3) * timeHr * 3);
 
     sLog->outDebug(LOG_FILTER_AUCTIONHOUSE, "MSV:        %u", MSV);
     sLog->outDebug(LOG_FILTER_AUCTIONHOUSE, "Items:      %u", count);
@@ -96,39 +84,37 @@ void AuctionHouseMgr::SendAuctionWonMail(AuctionEntry* auction, SQLTransaction& 
     uint32 bidder_accId = 0;
     uint64 bidder_guid = MAKE_NEW_GUID(auction->bidder, 0, HIGHGUID_PLAYER);
     Player* bidder = ObjectAccessor::FindPlayer(bidder_guid);
+
     // data for gm.log
-    if (sWorld->getBoolConfig(CONFIG_GM_LOG_TRADE))
+    uint32 bidder_security = 0;
+    std::string bidder_name;
+    if (bidder)
     {
-        uint32 bidder_security = 0;
-        std::string bidder_name;
-        if (bidder)
-        {
-            bidder_accId = bidder->GetSession()->GetAccountId();
-            bidder_security = bidder->GetSession()->GetSecurity();
-            bidder_name = bidder->GetName();
-        }
-        else
-        {
-            bidder_accId = sObjectMgr->GetPlayerAccountIdByGUID(bidder_guid);
-            bidder_security = AccountMgr::GetSecurity(bidder_accId, realmID);
+        bidder_accId = bidder->GetSession()->GetAccountId();
+        bidder_security = bidder->GetSession()->GetSecurity();
+        bidder_name = bidder->GetName();
+    }
+    else
+    {
+        bidder_accId = sObjectMgr->GetPlayerAccountIdByGUID(bidder_guid);
+        bidder_security = AccountMgr::GetSecurity(bidder_accId, realmID);
 
-            if (!AccountMgr::IsPlayerAccount(bidder_security)) // not do redundant DB requests
-            {
-                if (!sObjectMgr->GetPlayerNameByGUID(bidder_guid, bidder_name))
-                    bidder_name = sObjectMgr->GetTrinityStringForDBCLocale(LANG_UNKNOWN);
-            }
-        }
-        if (!AccountMgr::IsPlayerAccount(bidder_security))
+        if (!AccountMgr::IsPlayerAccount(bidder_security)) // not do redundant DB requests
         {
-            std::string owner_name;
-            if (!sObjectMgr->GetPlayerNameByGUID(auction->owner, owner_name))
-                owner_name = sObjectMgr->GetTrinityStringForDBCLocale(LANG_UNKNOWN);
-
-            uint32 owner_accid = sObjectMgr->GetPlayerAccountIdByGUID(auction->owner);
-
-            sLog->outCommand(bidder_accId, "GM %s (Account: %u) won item in auction: %s (Entry: %u Count: %u) and pay money: %u. Original owner %s (Account: %u)",
-                bidder_name.c_str(), bidder_accId, pItem->GetTemplate()->Name1.c_str(), pItem->GetEntry(), pItem->GetCount(), auction->bid, owner_name.c_str(), owner_accid);
+            if (!sObjectMgr->GetPlayerNameByGUID(bidder_guid, bidder_name))
+                bidder_name = sObjectMgr->GetTrinityStringForDBCLocale(LANG_UNKNOWN);
         }
+    }
+    if (!AccountMgr::IsPlayerAccount(bidder_security))
+    {
+        std::string owner_name;
+        if (!sObjectMgr->GetPlayerNameByGUID(auction->owner, owner_name))
+            owner_name = sObjectMgr->GetTrinityStringForDBCLocale(LANG_UNKNOWN);
+
+        uint32 owner_accid = sObjectMgr->GetPlayerAccountIdByGUID(auction->owner);
+
+        sLog->outCommand(bidder_accId, "GM %s (Account: %u) won item in auction: %s (Entry: %u Count: %u) and pay money: %u. Original owner %s (Account: %u)",
+            bidder_name.c_str(), bidder_accId, pItem->GetTemplate()->Name1.c_str(), pItem->GetEntry(), pItem->GetCount(), auction->bid, owner_name.c_str(), owner_accid);
     }
 
     // receiver exist
@@ -418,39 +404,6 @@ AuctionHouseEntry const* AuctionHouseMgr::GetAuctionHouseEntry(uint32 factionTem
 {
     uint32 houseid = 7; // goblin auction house
 
-    if (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_AUCTION))
-    {
-        //FIXME: found way for proper auctionhouse selection by another way
-        // AuctionHouse.dbc have faction field with _player_ factions associated with auction house races.
-        // but no easy way convert creature faction to player race faction for specific city
-        switch (factionTemplateId)
-        {
-            case   12: houseid = 1; break; // human
-            case   29: houseid = 6; break; // orc, and generic for horde
-            case   55: houseid = 2; break; // dwarf, and generic for alliance
-            case   68: houseid = 4; break; // undead
-            case   80: houseid = 3; break; // n-elf
-            case  104: houseid = 5; break; // trolls
-            case  120: houseid = 7; break; // booty bay, neutral
-            case  474: houseid = 7; break; // gadgetzan, neutral
-            case  855: houseid = 7; break; // everlook, neutral
-            case 1604: houseid = 6; break; // b-elfs,
-            default:                       // for unknown case
-            {
-                FactionTemplateEntry const* u_entry = sFactionTemplateStore.LookupEntry(factionTemplateId);
-                if (!u_entry)
-                    houseid = 7; // goblin auction house
-                else if (u_entry->ourMask & FACTION_MASK_ALLIANCE)
-                    houseid = 1; // human auction house
-                else if (u_entry->ourMask & FACTION_MASK_HORDE)
-                    houseid = 6; // orc auction house
-                else
-                    houseid = 7; // goblin auction house
-                break;
-            }
-        }
-    }
-
     return sAuctionHouseStore.LookupEntry(houseid);
 }
 
@@ -686,7 +639,7 @@ bool AuctionEntry::BuildAuctionInfo(WorldPacket& data) const
 
 uint32 AuctionEntry::GetAuctionCut() const
 {
-    int32 cut = int32(CalculatePctU(bid, auctionHouseEntry->cutPercent) * sWorld->getRate(RATE_AUCTION_CUT));
+    int32 cut = int32(CalculatePctU(bid, auctionHouseEntry->cutPercent));
     return std::max(cut, 0);
 }
 

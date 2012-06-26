@@ -271,19 +271,10 @@ uint32 CreatureTextMgr::SendChat(Creature* source, uint8 textGroup, uint64 whisp
 
 float CreatureTextMgr::GetRangeForChatType(ChatMsg msgType) const
 {
-    float dist = sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY);
-    switch (msgType)
-    {
-        case CHAT_MSG_MONSTER_YELL:
-            dist = sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_YELL);
-            break;
-        case CHAT_MSG_MONSTER_EMOTE:
-        case CHAT_MSG_RAID_BOSS_EMOTE:
-            dist = sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE);
-            break;
-        default:
-            break;
-    }
+    float dist = 40;
+
+    if (msgType == CHAT_MSG_MONSTER_YELL)
+        dist = 300;
 
     return dist;
 }

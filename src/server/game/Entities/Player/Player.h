@@ -137,7 +137,6 @@ struct SpellCooldown
 };
 
 typedef std::map<uint32, SpellCooldown> SpellCooldowns;
-typedef UNORDERED_MAP<uint32 /*instanceId*/, time_t/*releaseTime*/> InstanceTimeMap;
 
 enum TrainerSpellState
 {
@@ -804,8 +803,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADRANDOMBG             = 27,
     PLAYER_LOGIN_QUERY_LOADBANNED               = 28,
     PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW       = 29,
-    PLAYER_LOGIN_QUERY_LOADINSTANCELOCKTIMES    = 30,
-    PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS  = 31,
+    PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS  = 30,
     MAX_PLAYER_LOGIN_QUERY,
 };
 
@@ -1655,7 +1653,6 @@ class Player : public Unit, public GridObject<Player>
         uint32 GetFreeTalentPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS1); }
         void SetFreeTalentPoints(uint32 points);
         bool resetTalents(bool no_cost = false);
-        uint32 resetTalentsCost() const;
         void InitTalentForLevel();
         void BuildPlayerTalentsInfoData(WorldPacket* data);
         void BuildPetTalentsInfoData(WorldPacket* data);
@@ -1951,7 +1948,7 @@ class Player : public Unit, public GridObject<Player>
         void CreateCorpse();
         void KillPlayer();
         uint32 GetResurrectionSpellId();
-        void ResurrectPlayer(float restore_percent, bool applySickness = false);
+        void ResurrectPlayer(float restore_percent);
         void BuildPlayerRepop();
         void RepopAtGraveyard();
 
@@ -2384,18 +2381,6 @@ class Player : public Unit, public GridObject<Player>
         static void ConvertInstancesToGroup(Player* player, Group* group, bool switchLeader);
         bool Satisfy(AccessRequirement const* ar, uint32 target_map, bool report = false);
         bool CheckInstanceLoginValid();
-        bool CheckInstanceCount(uint32 instanceId) const
-        {
-            if (_instanceResetTimes.size() < sWorld->getIntConfig(CONFIG_MAX_INSTANCES_PER_HOUR))
-                return true;
-            return _instanceResetTimes.find(instanceId) != _instanceResetTimes.end();
-        }
-
-        void AddInstanceEnterTime(uint32 instanceId, time_t enterTime)
-        {
-            if (_instanceResetTimes.find(instanceId) == _instanceResetTimes.end())
-                _instanceResetTimes.insert(InstanceTimeMap::value_type(instanceId, enterTime + HOUR));
-        }
 
         // last used pet number (for BG's)
         uint32 GetLastPetNumber() const { return m_lastpetnumber; }
@@ -2596,7 +2581,6 @@ class Player : public Unit, public GridObject<Player>
         void _LoadBGData(PreparedQueryResult result);
         void _LoadGlyphs(PreparedQueryResult result);
         void _LoadTalents(PreparedQueryResult result);
-        void _LoadInstanceTimeRestrictions(PreparedQueryResult result);
 
         /*********************************************************/
         /***                   SAVE SYSTEM                     ***/
@@ -2617,7 +2601,6 @@ class Player : public Unit, public GridObject<Player>
         void _SaveGlyphs(SQLTransaction& trans);
         void _SaveTalents(SQLTransaction& trans);
         void _SaveStats(SQLTransaction& trans);
-        void _SaveInstanceTimeRestrictions(SQLTransaction& trans);
 
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
         void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
@@ -2857,7 +2840,6 @@ class Player : public Unit, public GridObject<Player>
         uint32 m_timeSyncClient;
         uint32 m_timeSyncServer;
 
-        InstanceTimeMap _instanceResetTimes;
         uint32 _pendingBindId;
         uint32 _pendingBindTimer;
 };
