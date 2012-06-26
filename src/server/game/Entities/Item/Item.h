@@ -221,6 +221,9 @@ class Item : public Object
         void SetOwnerGUID(uint64 guid) { SetUInt64Value(ITEM_FIELD_OWNER, guid); }
         Player* GetOwner()const;
 
+        uint32 GetItemDisplayId() const { return GetUInt32Value(ITEM_FIELD_DISPLAY_ID); }
+        void SetItemDisplayId(uint32 displayId) { SetUInt32Value(ITEM_FIELD_DISPLAY_ID, displayId); }
+
         void SetBinding(bool val) { ApplyModFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND, val); }
         bool IsSoulBound() const { return HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND); }
         bool IsBoundAccountWide() const { return (GetTemplate()->Flags & ITEM_PROTO_FLAG_BIND_TO_ACCOUNT) != 0; }

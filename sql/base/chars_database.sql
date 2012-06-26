@@ -1839,6 +1839,7 @@ DROP TABLE IF EXISTS `item_instance`;
 CREATE TABLE `item_instance` (
   `guid` int(10) unsigned NOT NULL DEFAULT '0',
   `itemEntry` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `displayId` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `owner_guid` int(10) unsigned NOT NULL DEFAULT '0',
   `creatorGuid` int(10) unsigned NOT NULL DEFAULT '0',
   `giftCreatorGuid` int(10) unsigned NOT NULL DEFAULT '0',
