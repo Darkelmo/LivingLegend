@@ -127,30 +127,6 @@ LOCK TABLES `ip_banned` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `logs`
---
-
-DROP TABLE IF EXISTS `logs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `logs` (
-  `time` int(10) unsigned NOT NULL,
-  `realm` int(10) unsigned NOT NULL,
-  `type` tinyint(3) unsigned NOT NULL,
-  `string` text CHARACTER SET latin1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `logs`
---
-
-LOCK TABLES `logs` WRITE;
-/*!40000 ALTER TABLE `logs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `logs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `realmcharacters`
 --
 

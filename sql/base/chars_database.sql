@@ -35,30 +35,6 @@ LOCK TABLES `account_data` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `account_instance_times`
---
-
-DROP TABLE IF EXISTS `account_instance_times`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `account_instance_times` (
-  `accountId` int(10) unsigned NOT NULL,
-  `instanceId` int(10) unsigned NOT NULL DEFAULT '0',
-  `releaseTime` bigint(20) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`accountId`,`instanceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `account_instance_times`
---
-
-LOCK TABLES `account_instance_times` WRITE;
-/*!40000 ALTER TABLE `account_instance_times` DISABLE KEYS */;
-/*!40000 ALTER TABLE `account_instance_times` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `account_tutorial`
 --
 
@@ -229,34 +205,6 @@ CREATE TABLE `bugreport` (
 LOCK TABLES `bugreport` WRITE;
 /*!40000 ALTER TABLE `bugreport` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bugreport` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `channels`
---
-
-DROP TABLE IF EXISTS `channels`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `channels` (
-  `name` varchar(128) NOT NULL,
-  `team` int(10) unsigned NOT NULL,
-  `announce` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `ownership` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `password` varchar(32) DEFAULT NULL,
-  `bannedList` text,
-  `lastUsed` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`name`,`team`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Channel System';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `channels`
---
-
-LOCK TABLES `channels` WRITE;
-/*!40000 ALTER TABLE `channels` DISABLE KEYS */;
-/*!40000 ALTER TABLE `channels` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
