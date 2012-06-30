@@ -54,9 +54,13 @@ bool ChatHandler::HandleMuteCommand(const char* args)
         return false;
 
     char *mutereason = strtok(NULL, "\r");
-    std::string mutereasonstr = "No reason";
-    if (mutereason != NULL)
-         mutereasonstr = mutereason;
+
+    if (mutereason == NULL)
+    {
+        PSendSysMessage("¬ведите причину мута.");
+        SetSentErrorMessage(true);
+        return false;
+    }
 
     Player* target;
     uint64 target_guid;
@@ -87,7 +91,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
 
         stmt->setInt64(0, muteTime);
 
-        ChatHandler(target).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, notspeaktime, mutereasonstr.c_str());
+        ChatHandler(target).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, notspeaktime, mutereason);
     }
     else
     {
@@ -103,7 +107,7 @@ bool ChatHandler::HandleMuteCommand(const char* args)
 
     std::string nameLink = playerLink(target_name);
 
-    PSendSysMessage(target ? LANG_YOU_DISABLE_CHAT : LANG_COMMAND_DISABLE_CHAT_DELAYED, nameLink.c_str(), notspeaktime, mutereasonstr.c_str());
+    PSendSysMessage(target ? LANG_YOU_DISABLE_CHAT : LANG_COMMAND_DISABLE_CHAT_DELAYED, nameLink.c_str(), notspeaktime, mutereason);
 
     return true;
 }
