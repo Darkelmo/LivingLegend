@@ -133,18 +133,37 @@ std::string secsToTimeString(uint64 timeInSecs, bool shortText, bool hoursOnly)
 
     std::ostringstream ss;
     if (days)
-        ss << days << (shortText ? "d" : " Day(s) ");
+        ss << days << (shortText ? "д" : ending(days, " дней ", " день ", " дня "));
     if (hours || hoursOnly)
-        ss << hours << (shortText ? "h" : " Hour(s) ");
+        ss << hours << (shortText ? "ч" : ending(hours, " часов ", " час ", " часа "));
     if (!hoursOnly)
     {
         if (minutes)
-            ss << minutes << (shortText ? "m" : " Minute(s) ");
+            ss << minutes << (shortText ? "м" : ending(minutes, " минут ", " минута ", " минуты "));
         if (secs || (!days && !hours && !minutes) )
-            ss << secs << (shortText ? "s" : " Second(s).");
+            ss << secs << (shortText ? "с" : ending(secs, " секунд ", " секунда ", " секунды "));
     }
 
     return ss.str();
+}
+
+std::string ending(uint32 number, std::string ending0, std::string ending1, std::string ending2)
+{
+    uint16 num100 = number % 100;
+    uint16 num10 = number % 10;
+
+    if (num100 >= 5 && num100 <= 20)
+        return ending0;
+    else if (num10 == 0)
+        return ending0;
+    else if (num10 == 1)
+        return ending1;
+    else if (num10 >= 2 && num10 <= 4)
+        return ending2;
+    else if (num10 >= 5 && num10 <= 9)
+        return ending0;
+
+    return ending2;
 }
 
 uint32 TimeStringToSecs(const std::string& timestring)

@@ -45,6 +45,7 @@ struct Tokens: public std::vector<char*>
 void stripLineInvisibleChars(std::string &src);
 
 std::string secsToTimeString(uint64 timeInSecs, bool shortText = false, bool hoursOnly = false);
+std::string ending(uint32 number, std::string ending0, std::string ending1, std::string ending2);
 uint32 TimeStringToSecs(const std::string& timestring);
 std::string TimeToTimestampStr(time_t t);
 
