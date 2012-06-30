@@ -106,23 +106,19 @@ public:
 
     static bool HandleServerInfoCommand(ChatHandler* handler, char const* /*args*/)
     {
-        uint32 playersNum           = sWorld->GetPlayerCount();
-        uint32 maxPlayersNum        = sWorld->GetMaxPlayerCount();
         uint32 activeClientsNum     = sWorld->GetActiveSessionCount();
-        uint32 queuedClientsNum     = sWorld->GetQueuedSessionCount();
-        uint32 maxActiveClientsNum  = sWorld->GetMaxActiveSessionCount();
-        uint32 maxQueuedClientsNum  = sWorld->GetMaxQueuedSessionCount();
         std::string uptime          = secsToTimeString(sWorld->GetUptime());
         uint32 updateTime           = sWorld->GetUpdateTime();
 
-        handler->SendSysMessage(_FULLVERSION);
-        handler->PSendSysMessage(LANG_CONNECTED_PLAYERS, playersNum, maxPlayersNum);
-        handler->PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
+        handler->PSendSysMessage(" ");
+        handler->PSendSysMessage("-- Информация");
+        handler->PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum);
         handler->PSendSysMessage(LANG_UPTIME, uptime.c_str());
         handler->PSendSysMessage(LANG_UPDATE_DIFF, updateTime);
         // Can't use sWorld->ShutdownMsg here in case of console command
         if (sWorld->IsShuttingDown())
             handler->PSendSysMessage(LANG_SHUTDOWN_TIMELEFT, secsToTimeString(sWorld->GetShutDownTimeLeft()).c_str());
+        handler->PSendSysMessage(" ");
 
         return true;
     }
