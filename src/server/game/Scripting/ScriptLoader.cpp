@@ -17,13 +17,6 @@
 
 #include "ScriptLoader.h"
 
-//examples
-void AddSC_example_creature();
-void AddSC_example_escort();
-void AddSC_example_gossip_codebox();
-void AddSC_example_misc();
-void AddSC_example_commandscript();
-
 // spells
 void AddSC_deathknight_spell_scripts();
 void AddSC_druid_spell_scripts();
@@ -38,7 +31,6 @@ void AddSC_warlock_spell_scripts();
 void AddSC_warrior_spell_scripts();
 void AddSC_quest_spell_scripts();
 void AddSC_item_spell_scripts();
-void AddSC_example_spell_scripts();
 void AddSC_holiday_spell_scripts();
 
 void AddSC_SmartSCripts();
@@ -605,7 +597,6 @@ void AddSC_chat_log();
 
 void AddScripts()
 {
-    AddExampleScripts();
     AddSpellScripts();
     AddSC_SmartSCripts();
     AddCommandScripts();
@@ -619,15 +610,6 @@ void AddScripts()
     AddOutdoorPvPScripts();
     AddCustomScripts();
 #endif
-}
-
-void AddExampleScripts()
-{
-    AddSC_example_creature();
-    AddSC_example_escort();
-    AddSC_example_gossip_codebox();
-    AddSC_example_misc();
-    AddSC_example_commandscript();
 }
 
 void AddSpellScripts()
@@ -645,7 +627,6 @@ void AddSpellScripts()
     AddSC_warrior_spell_scripts();
     AddSC_quest_spell_scripts();
     AddSC_item_spell_scripts();
-    AddSC_example_spell_scripts();
     AddSC_holiday_spell_scripts();
 }
 
