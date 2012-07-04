@@ -1543,6 +1543,8 @@ class Unit : public WorldObject
         void SetInCombatWith(Unit* enemy);
         void ClearInCombat();
         uint32 GetCombatTimer() const { return m_CombatTimer; }
+        uint32 GetNonInCombatTimer() const { return m_nonInCombatTimer; }
+        void resetNonInCombatTimer() { m_nonInCombatTimer = 30000; }
 
         bool HasAuraTypeWithFamilyFlags(AuraType auraType, uint32 familyName, uint32 familyFlags) const;
         bool virtual HasSpell(uint32 /*spellID*/) const { return false; }
@@ -2347,6 +2349,7 @@ class Unit : public WorldObject
 
         uint32 m_state;                                     // Even derived shouldn't modify
         uint32 m_CombatTimer;
+        uint32 m_nonInCombatTimer;
         uint32 m_lastManaUse;                               // msecs
         TimeTrackerSmall m_movesplineTimer;
 

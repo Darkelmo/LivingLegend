@@ -862,6 +862,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     m_playerLoading = false;
 
+    pCurrChar->resetNonInCombatTimer();
+
     sScriptMgr->OnPlayerLogin(pCurrChar);
     delete holder;
 }

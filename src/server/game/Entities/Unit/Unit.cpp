@@ -228,6 +228,7 @@ m_HostileRefManager(this)
 
     m_CombatTimer = 0;
     m_lastManaUse = 0;
+    m_nonInCombatTimer = 0;
 
     for (uint8 i = 0; i < MAX_SPELL_SCHOOL; ++i)
         m_threatModifier[i] = 1.0f;
@@ -335,6 +336,11 @@ void Unit::Update(uint32 p_time)
             else
                 m_CombatTimer -= p_time;
         }
+    }
+
+    if (!isInCombat() && GetTypeId() == TYPEID_PLAYER)
+    {
+        m_nonInCombatTimer += p_time;
     }
 
     // not implemented before 3.0.2
@@ -12031,6 +12037,8 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
     if (PvP)
         m_CombatTimer = 5000;
 
+    m_nonInCombatTimer = 0;
+
     if (isInCombat() || HasUnitState(UNIT_STATE_EVADE))
         return;
 
@@ -12076,6 +12084,8 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 void Unit::ClearInCombat()
 {
     m_CombatTimer = 0;
+    m_nonInCombatTimer = 0;
+
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
 
     // Player's state will be cleared in Player::UpdateContestedPvP
