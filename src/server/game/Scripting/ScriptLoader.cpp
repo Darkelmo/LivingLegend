@@ -17,6 +17,9 @@
 
 #include "ScriptLoader.h"
 
+// custom
+void AddSC_npc_helper();
+
 // spells
 void AddSC_deathknight_spell_scripts();
 void AddSC_druid_spell_scripts();
@@ -1224,6 +1227,6 @@ void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-
+    AddSC_npc_helper();
 #endif
 }

@@ -719,6 +719,75 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket & recv_data)
     SendListInventory(guid);
 }
 
+void WorldSession::sSendListInventory(uint64 vendorEntry, uint64 guid)
+{
+    sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Sent SMSG_LIST_INVENTORY");
+
+    // remove fake death
+    if (GetPlayer()->HasUnitState(UNIT_STATE_DIED))
+        GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
+
+    VendorItemData const* items = sObjectMgr->GetNpcVendorItemList(vendorEntry);
+    if (!items)
+    {
+        WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + 1);
+        data << uint64(guid);
+        data << uint8(0);                                   // count == 0, next will be error code
+        data << uint8(0);                                   // "Vendor has no inventory"
+        SendPacket(&data);
+        return;
+    }
+
+    uint8 itemCount = items->GetItemCount();
+    uint8 count = 0;
+
+    WorldPacket data(SMSG_LIST_INVENTORY, 8 + 1 + itemCount * 8 * 4);
+    data << uint64(guid);
+
+    size_t countPos = data.wpos();
+    data << uint8(count);
+
+    for (uint8 slot = 0; slot < itemCount; ++slot)
+    {
+        if (VendorItem const* item = items->GetItem(slot))
+        {
+            if (ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(item->item))
+            {
+                if (!(itemTemplate->AllowableClass & _player->getClassMask()) && !_player->isGameMaster())
+                    continue;
+                // Only display items in vendor lists for the team the
+                // player is on. If GM on, display all items.
+                if (!_player->isGameMaster() && ((itemTemplate->Flags2 & ITEM_FLAGS_EXTRA_HORDE_ONLY && _player->GetTeam() == ALLIANCE) || (itemTemplate->Flags2 == ITEM_FLAGS_EXTRA_ALLIANCE_ONLY && _player->GetTeam() == HORDE)))
+                    continue;
+
+                ++count;
+
+                // reputation discount
+                int32 price = item->IsGoldRequired(itemTemplate) ? uint32(itemTemplate->BuyPrice) : 0;
+
+                data << uint32(slot + 1);       // client expects counting to start at 1
+                data << uint32(item->item);
+                data << uint32(itemTemplate->DisplayInfoID);
+                data << int32(0xFFFFFFFF);
+                data << uint32(price);
+                data << uint32(itemTemplate->MaxDurability);
+                data << uint32(itemTemplate->BuyCount);
+                data << uint32(item->ExtendedCost);
+            }
+        }
+    }
+
+    if (count == 0)
+    {
+        data << uint8(0);
+        SendPacket(&data);
+        return;
+    }
+
+    data.put<uint8>(countPos, count);
+    SendPacket(&data);
+}
+
 void WorldSession::SendListInventory(uint64 vendorGuid)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: Sent SMSG_LIST_INVENTORY");
