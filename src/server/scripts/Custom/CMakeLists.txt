@@ -11,6 +11,7 @@
 set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
   Custom/npc_helper.cpp
+  Custom/on_duel.cpp
 )
 
 message("  -> Prepared: Custom")
