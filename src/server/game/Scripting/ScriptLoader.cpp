@@ -20,6 +20,7 @@
 // custom
 void AddSC_npc_helper();
 void AddSC_on_duel();
+void AddSC_npc_enchant();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -1230,5 +1231,6 @@ void AddCustomScripts()
     /* This is where custom scripts should be added. */
     AddSC_npc_helper();
     AddSC_on_duel();
+    AddSC_npc_enchant();
 #endif
 }
