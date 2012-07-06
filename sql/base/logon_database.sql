@@ -180,7 +180,7 @@ CREATE TABLE `realmlist` (
 
 LOCK TABLES `realmlist` WRITE;
 /*!40000 ALTER TABLE `realmlist` DISABLE KEYS */;
-INSERT INTO `realmlist` VALUES (1, 'Living Legend', '127.0.0.1', 8080, 1, 40, 1, 0, 0, 12340);
+INSERT INTO `realmlist` VALUES (1, 'Живые легенды', '127.0.0.1', 8080, 1, 40, 1, 0, 0, 12340);
 /*!40000 ALTER TABLE `realmlist` ENABLE KEYS */;
 UNLOCK TABLES;
 
