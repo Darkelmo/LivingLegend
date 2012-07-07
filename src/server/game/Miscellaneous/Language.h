@@ -708,7 +708,6 @@ enum TrinityStrings
 
     // Room for BG/ARENA                = 773-784, 788-799 not used
     LANG_ARENA_TESTING                  = 785,
-    LANG_AUTO_ANN                       = 786,
     LANG_ANNOUNCE_COLOR                 = 787,
 
     // in game strings
