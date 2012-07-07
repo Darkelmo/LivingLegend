@@ -3590,11 +3590,7 @@ void ObjectMgr::LoadQuests()
         "StartScript, CompleteScript, WDBVerified"
         " FROM quest_template");
     if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 quests definitions. DB table `quest_template` is empty.");
-        sLog->outString();
         return;
-    }
 
     // create multimap previous quest for each existed quest
     // some quests can have many previous maps set by NextQuestId in previous quest
@@ -6886,11 +6882,7 @@ void ObjectMgr::LoadQuestPOI()
     QueryResult result = WorldDatabase.Query("SELECT questId, id, objIndex, mapid, WorldMapAreaId, FloorId, unk3, unk4 FROM quest_poi order by questId");
 
     if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 quest POI definitions. DB table `quest_poi` is empty.");
-        sLog->outString();
         return;
-    }
 
     //                                                0       1   2  3
     QueryResult points = WorldDatabase.Query("SELECT questId, id, x, y FROM quest_poi_points ORDER BY questId DESC, idx");
@@ -7059,11 +7051,7 @@ void ObjectMgr::LoadQuestRelationsHelper(QuestRelations& map, std::string table,
     QueryResult result = WorldDatabase.PQuery("SELECT id, quest, pool_entry FROM %s qr LEFT JOIN pool_quest pq ON qr.quest = pq.entry", table.c_str());
 
     if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 quest relations from `%s`, table is empty.", table.c_str());
-        sLog->outString();
         return;
-    }
 
     PooledQuestRelation* poolRelationMap = go ? &sPoolMgr->mQuestGORelation : &sPoolMgr->mQuestCreatureRelation;
     if (starter)
