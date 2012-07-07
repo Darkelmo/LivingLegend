@@ -786,7 +786,7 @@ void BattlegroundMgr::CreateInitialBattlegrounds()
             if (data.bgTypeId != BATTLEGROUND_AA)
                 m_ArenaSelectionWeights[data.bgTypeId] = selectionWeight;
         }
-        else if (data.bgTypeId != BATTLEGROUND_RB)
+        else if (data.bgTypeId != BATTLEGROUND_AV && data.bgTypeId != BATTLEGROUND_IC && data.bgTypeId != BATTLEGROUND_RB)
             m_BGSelectionWeights[data.bgTypeId] = selectionWeight;
         ++count;
     }
