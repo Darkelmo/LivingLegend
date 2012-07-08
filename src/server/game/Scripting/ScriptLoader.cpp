@@ -21,6 +21,7 @@
 void AddSC_npc_helper();
 void AddSC_on_duel();
 void AddSC_npc_enchant();
+void AddSC_npc_reforging();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -1238,5 +1239,6 @@ void AddCustomScripts()
     AddSC_npc_helper();
     AddSC_on_duel();
     AddSC_npc_enchant();
+    AddSC_npc_reforging();
 #endif
 }

@@ -24,7 +24,7 @@ public:
         else
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Восстановить здоровье", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+36);
 
-        player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+        player->SEND_GOSSIP_MENU(55005, creature->GetGUID());
         return true;
     }
 
@@ -47,7 +47,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_MONEY_BAG, "Самоцветы", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+22);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Символы", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+30);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Полезное", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+42);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55006, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+3:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "<- Назад", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
@@ -63,13 +63,13 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Щиты", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+35);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "В правую руку", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+37);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Реликты", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+38);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55006, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+4:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "<- Назад", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Комплект Tier 9", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Комплект Tier 10", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55006, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+5:
                 player->GetSession()->sSendListInventory(50001, creature->GetGUID());
@@ -81,7 +81,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "<- Назад", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Комплект 7 сезона арены", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+8);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Комплект 8 сезона арены", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+9);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55006, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+8:
                 player->GetSession()->sSendListInventory(50000, creature->GetGUID());
@@ -102,7 +102,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Огнестрельное", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+19);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Топоры", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+20);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Жезлы", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+21);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55006, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+11:
                 player->GetSession()->sSendListInventory(50013, creature->GetGUID());
@@ -146,7 +146,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Оранжевые", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+27);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Особые", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+28);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, "Пурпурные", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+29);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55006, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+23:
                 player->GetSession()->sSendListInventory(50017, creature->GetGUID());

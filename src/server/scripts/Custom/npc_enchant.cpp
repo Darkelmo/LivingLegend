@@ -109,7 +109,7 @@ public:
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "Левая рука", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+13);
 
         if (count > 0)
-            player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+            player->SEND_GOSSIP_MENU(55001, creature->GetGUID());
         else
             ChatHandler(player).PSendSysMessage("|cfff4b25eМастер наложения чар шепчет:|r |cfffcedbbНа вас не экипировано ни одного предмета который я смогла бы зачаровать.|r");
 
@@ -142,7 +142,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 30, сопр. природе 25", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+27);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 30, устойчивость 25", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+18);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 37, рейтинг защиты 20", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+22);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+16:
                 Enchant(player, creature, EQUIPMENT_SLOT_HEAD, 3795);
@@ -189,7 +189,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила заклинаний 23, устойчивость 15", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+30);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 30, устойчивость 15", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+28);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "рейтинг уклонения 60, защиты 15", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+33);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+28:
                 Enchant(player, creature, EQUIPMENT_SLOT_SHOULDERS, 3852);
@@ -224,7 +224,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "* восстановить 400 маны при касте", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+42);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "* сила заклинаний 295 при касте", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+43);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "* сила атаки 400 при атаке", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+44);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55004, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+35:
                 Enchant(player, creature, EQUIPMENT_SLOT_BACK, 3256);
@@ -263,7 +263,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "10 маны в 5 сек.", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+49);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "устойчивость 20", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+50);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "рейтинг защиты 22", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+51);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+47:
                 Enchant(player, creature, EQUIPMENT_SLOT_CHEST, 3832);
@@ -289,7 +289,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "рейтинг мастерства 15", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+56);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "все характеристики 6", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+57);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "интелект 16", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+58);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+52:
                 Enchant(player, creature, EQUIPMENT_SLOT_WRISTS, 3757);
@@ -322,7 +322,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "меткость 20", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+63);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "мастерство 15", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+64);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "ракетница", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+121);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+59:
                 Enchant(player, creature, EQUIPMENT_SLOT_HANDS, 3249);
@@ -355,7 +355,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила атаки 100, крит 36", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+67);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила заклинаний 50, дух 20", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+68);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила заклинаний 50, выносливость 30", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+69);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+65:
                 Enchant(player, creature, EQUIPMENT_SLOT_LEGS, 3853);
@@ -382,7 +382,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "крит и меткость 12", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+75);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 22", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+76);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "нитроускорители", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+77);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+70:
                 Enchant(player, creature, EQUIPMENT_SLOT_FEET, 1597);
@@ -413,7 +413,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила атаки 40", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+78);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила заклинаний 23", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+79);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 30", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+80);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+78:
                 Enchant(player, creature, EQUIPMENT_SLOT_FINGER1, 3839);
@@ -429,7 +429,7 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила атаки 40", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+81);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "сила заклинаний 23", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+82);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "выносливость 30", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+83);
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55003, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+81:
                 Enchant(player, creature, EQUIPMENT_SLOT_FINGER2, 3839);
@@ -472,7 +472,7 @@ public:
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "* парирование 200 и урон 600-800", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+93);
                 }
 
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55004, creature->GetGUID());
             }   break;
             case GOSSIP_ACTION_INFO_DEF+84:
                 Enchant(player, creature, EQUIPMENT_SLOT_MAINHAND, 3851, 1);
@@ -557,7 +557,7 @@ public:
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "устойчивость 12", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+103);
                 }
 
-                player->SEND_GOSSIP_MENU(68, creature->GetGUID());
+                player->SEND_GOSSIP_MENU(55004, creature->GetGUID());
             }   break;
             case GOSSIP_ACTION_INFO_DEF+100:
                 Enchant(player, creature, EQUIPMENT_SLOT_OFFHAND, 1952, 4);
