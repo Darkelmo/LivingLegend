@@ -74,7 +74,7 @@ public:
         item->SetEnchantment(PERM_ENCHANTMENT_SLOT, enchant, 0, 0);
         player->ApplyEnchantment(item, PERM_ENCHANTMENT_SLOT, true);
 
-        creature->CastSpell(player, 45209, true);
+        player->CastSpell(player, 76706, true);
 
         OnGossipHello(player, creature);
     }
