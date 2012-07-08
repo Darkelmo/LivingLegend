@@ -70,7 +70,7 @@ public:
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "Плечо", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
         if (isEquiped(player, EQUIPMENT_SLOT_BACK, count))
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "Спина", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
-        if (isEquiped(player, EQUIPMENT_SLOT_BODY, count))
+        if (isEquiped(player, EQUIPMENT_SLOT_CHEST, count))
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "Грудь", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
         if (isEquiped(player, EQUIPMENT_SLOT_WRISTS, count))
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, "Запястья", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
@@ -244,19 +244,19 @@ public:
                 player->SEND_GOSSIP_MENU(68, creature->GetGUID());
                 break;
             case GOSSIP_ACTION_INFO_DEF+47:
-                Enchant(player, creature, EQUIPMENT_SLOT_BODY, 3832);
+                Enchant(player, creature, EQUIPMENT_SLOT_CHEST, 3832);
                 break;
             case GOSSIP_ACTION_INFO_DEF+48:
-                Enchant(player, creature, EQUIPMENT_SLOT_BODY, 3297);
+                Enchant(player, creature, EQUIPMENT_SLOT_CHEST, 3297);
                 break;
             case GOSSIP_ACTION_INFO_DEF+49:
-                Enchant(player, creature, EQUIPMENT_SLOT_BODY, 2381);
+                Enchant(player, creature, EQUIPMENT_SLOT_CHEST, 2381);
                 break;
             case GOSSIP_ACTION_INFO_DEF+50:
-                Enchant(player, creature, EQUIPMENT_SLOT_BODY, 3245);
+                Enchant(player, creature, EQUIPMENT_SLOT_CHEST, 3245);
                 break;
             case GOSSIP_ACTION_INFO_DEF+51:
-                Enchant(player, creature, EQUIPMENT_SLOT_BODY, 1953);
+                Enchant(player, creature, EQUIPMENT_SLOT_CHEST, 1953);
                 break;
             case GOSSIP_ACTION_INFO_DEF+6:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "<- Назад", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
