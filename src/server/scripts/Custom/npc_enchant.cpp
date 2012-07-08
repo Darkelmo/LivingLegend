@@ -10,6 +10,8 @@ public:
         Item* item = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
         if (!item)
             return false;
+        if ((slot == EQUIPMENT_SLOT_RANGED || slot == EQUIPMENT_SLOT_OFFHAND || slot == EQUIPMENT_SLOT_MAINHAND) && !requiredItem(slot, item))
+            return false;
 
         ++count;
 
@@ -30,8 +32,25 @@ public:
         if (type == 3 && (pProto->Class == 2 && pProto->SubClass == 10))
             return true;
         // shield
-        if (type == 4 && pProto->InventoryType == 14)
+        if (type == 4 && pProto->Class == 4 && pProto->SubClass == 6)
             return true;
+
+        return false;
+    }
+
+    bool requiredItem(uint8 slot, Item* item)
+    {
+        ItemTemplate const* pProto = item->GetTemplate();
+
+        if (slot == EQUIPMENT_SLOT_RANGED)
+            if (pProto->Class == 2 && (pProto->SubClass == 2 || pProto->SubClass == 3 || pProto->SubClass == 18 || pProto->SubClass == 19))
+                return true;
+        if (slot == EQUIPMENT_SLOT_OFFHAND)
+            if ((pProto->Class == 2 && (pProto->SubClass == 0 || pProto->SubClass == 4 || pProto->SubClass == 7 || pProto->SubClass == 13 || pProto->SubClass == 15)) || (pProto->Class == 4 && pProto->SubClass == 6))
+                return true;
+        if (slot == EQUIPMENT_SLOT_MAINHAND)
+            if (pProto->Class == 2 && (pProto->SubClass == 0 || pProto->SubClass == 1 || pProto->SubClass == 4 || pProto->SubClass == 5 || pProto->SubClass == 6 || pProto->SubClass == 7 || pProto->SubClass == 8 || pProto->SubClass == 10 || pProto->SubClass == 13 || pProto->SubClass == 15))
+                return true;
 
         return false;
     }
@@ -92,7 +111,7 @@ public:
         if (count > 0)
             player->SEND_GOSSIP_MENU(68, creature->GetGUID());
         else
-            ChatHandler(player).PSendSysMessage("|cfff4b25eМастер наложения чар шепчет:|r |cfffcedbbНа вас не экипировано ни одного предмета который я смог бы зачаровать.|r");
+            ChatHandler(player).PSendSysMessage("|cfff4b25eМастер наложения чар шепчет:|r |cfffcedbbНа вас не экипировано ни одного предмета который я смогла бы зачаровать.|r");
 
         return true;
     }
