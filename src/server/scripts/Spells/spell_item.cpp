@@ -1406,65 +1406,6 @@ class spell_item_socrethars_stone : public SpellScriptLoader
         }
 };
 
-enum DemonBroiledSurprise
-{
-    QUEST_SUPER_HOT_STEW                    = 11379,
-    SPELL_CREATE_DEMON_BROILED_SURPRISE     = 43753,
-    NPC_ABYSSAL_FLAMEBRINGER                = 19973,
-};
-
-class spell_item_demon_broiled_surprise : public SpellScriptLoader
-{
-    public:
-        spell_item_demon_broiled_surprise() : SpellScriptLoader("spell_item_demon_broiled_surprise") { }
-
-        class spell_item_demon_broiled_surprise_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_item_demon_broiled_surprise_SpellScript);
-
-            bool Validate(SpellInfo const* /*spell*/)
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_CREATE_DEMON_BROILED_SURPRISE) || !sObjectMgr->GetCreatureTemplate(NPC_ABYSSAL_FLAMEBRINGER) || !sObjectMgr->GetQuestTemplate(QUEST_SUPER_HOT_STEW))
-                    return false;
-                return true;
-            }
-
-            bool Load()
-            {
-               return GetCaster()->GetTypeId() == TYPEID_PLAYER;
-            }
-
-            void HandleDummy(SpellEffIndex /* effIndex */)
-            {
-                Unit* player = GetCaster();
-                player->CastSpell(player, SPELL_CREATE_DEMON_BROILED_SURPRISE, false);
-            }
-
-            SpellCastResult CheckRequirement()
-            {
-                Player* player = GetCaster()->ToPlayer();
-                if (player->GetQuestStatus(QUEST_SUPER_HOT_STEW) != QUEST_STATUS_INCOMPLETE)
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
-                if (Creature* creature = player->FindNearestCreature(NPC_ABYSSAL_FLAMEBRINGER, 10, false))
-                    if (creature->isDead())
-                        return SPELL_CAST_OK;
-                return SPELL_FAILED_NOT_HERE;
-            }
-
-            void Register()
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_item_demon_broiled_surprise_SpellScript::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
-                OnCheckCast += SpellCheckCastFn(spell_item_demon_broiled_surprise_SpellScript::CheckRequirement);
-            }
-        };
-
-        SpellScript* GetSpellScript() const
-        {
-            return new spell_item_demon_broiled_surprise_SpellScript();
-        }
-};
-
 enum CompleteRaptorCapture
 {
     SPELL_RAPTOR_CAPTURE_CREDIT     = 42337,
@@ -1848,60 +1789,6 @@ class spell_item_unusual_compass : public SpellScriptLoader
         }
 };
 
-enum ChickenCover
-{
-    SPELL_CHICKEN_NET               = 51959,
-    SPELL_CAPTURE_CHICKEN_ESCAPE    = 51037,
-    QUEST_CHICKEN_PARTY             = 12702,
-    QUEST_FLOWN_THE_COOP            = 12532,
-};
-
-class spell_item_chicken_cover : public SpellScriptLoader
-{
-    public:
-        spell_item_chicken_cover() : SpellScriptLoader("spell_item_chicken_cover") { }
-
-        class spell_item_chicken_cover_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_item_chicken_cover_SpellScript);
-
-            bool Load()
-            {
-                return GetCaster()->GetTypeId() == TYPEID_PLAYER;
-            }
-
-            bool Validate(SpellInfo const* /*spell*/)
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_CHICKEN_NET) || !sSpellMgr->GetSpellInfo(SPELL_CAPTURE_CHICKEN_ESCAPE) || !sObjectMgr->GetQuestTemplate(QUEST_CHICKEN_PARTY) || !sObjectMgr->GetQuestTemplate(QUEST_FLOWN_THE_COOP))
-                    return false;
-                return true;
-            }
-
-            void HandleDummy(SpellEffIndex /* effIndex */)
-            {
-                Player* caster = GetCaster()->ToPlayer();
-                if (Unit* target = GetHitUnit())
-                {
-                    if (!target->HasAura(SPELL_CHICKEN_NET) && (caster->GetQuestStatus(QUEST_CHICKEN_PARTY) == QUEST_STATUS_INCOMPLETE || caster->GetQuestStatus(QUEST_FLOWN_THE_COOP) == QUEST_STATUS_INCOMPLETE))
-                    {
-                        caster->CastSpell(caster, SPELL_CAPTURE_CHICKEN_ESCAPE, true);
-                        target->Kill(target);
-                    }
-                }
-            }
-
-            void Register()
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_item_chicken_cover_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const
-        {
-            return new spell_item_chicken_cover_SpellScript();
-        }
-};
-
 enum Refocus
 {
     SPELL_AIMED_SHOT    = 19434,
@@ -2046,7 +1933,6 @@ void AddSC_item_spell_scripts()
     new spell_item_nigh_invulnerability();
     new spell_item_poultryizer();
     new spell_item_socrethars_stone();
-    new spell_item_demon_broiled_surprise();
     new spell_item_complete_raptor_capture();
     new spell_item_impale_leviroth();
     new spell_item_brewfest_mount_transformation();
@@ -2055,7 +1941,6 @@ void AddSC_item_spell_scripts()
     new spell_item_rocket_boots();
     new spell_item_pygmy_oil();
     new spell_item_unusual_compass();
-    new spell_item_chicken_cover();
     new spell_item_muisek_vessel();
     new spell_item_greatmothers_soulcatcher();
 }
