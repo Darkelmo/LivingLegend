@@ -1023,7 +1023,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     InitTaxiNodesForLevel();
     InitGlyphsForLevel();
     InitTalentForLevel();
-    InitPrimaryProfessions();                               // to max set before any spell added
 
     // apply original stats mods before spell loading or item equipment that call before equip _RemoveStatsMods()
     UpdateMaxHealth();                                      // Update max Health (for add bonus from stamina)
@@ -3682,13 +3681,6 @@ bool Player::addSpell(uint32 spellId, bool active, bool learning, bool dependent
     // update used talent points count
     m_usedTalentCount += talentCost;
 
-    // update free primary prof.points (if any, can be none in case GM .learn prof. learning)
-    if (uint32 freeProfs = GetFreePrimaryProfessionPoints())
-    {
-        if (spellInfo->IsPrimaryProfessionFirstRank())
-            SetFreePrimaryProfessions(freeProfs-1);
-    }
-
     // add dependent skills
     uint16 maxskill     = GetMaxSkillValueForLevel();
 
@@ -3924,13 +3916,6 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
 
     // update free primary prof.points (if not overflow setting, can be in case GM use before .learn prof. learning)
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spell_id);
-    if (spellInfo && spellInfo->IsPrimaryProfessionFirstRank())
-    {
-        uint32 freeProfs = GetFreePrimaryProfessionPoints()+1;
-        if (freeProfs <= 2)
-            SetFreePrimaryProfessions(freeProfs);
-    }
-
     // remove dependent skill
     SpellLearnSkillNode const* spellLearnSkill = sSpellMgr->GetSpellLearnSkill(spell_id);
     if (spellLearnSkill)
@@ -4609,7 +4594,7 @@ TrainerSpellState Player::GetTrainerSpellState(TrainerSpell const* trainer_spell
         if (!trainer_spell->learnedSpell[i])
             continue;
         SpellInfo const* learnedSpellInfo = sSpellMgr->GetSpellInfo(trainer_spell->learnedSpell[i]);
-        if (learnedSpellInfo && learnedSpellInfo->IsPrimaryProfessionFirstRank() && (GetFreePrimaryProfessionPoints() == 0))
+        if (learnedSpellInfo && learnedSpellInfo->IsPrimaryProfessionFirstRank())
             return TRAINER_SPELL_GREEN_DISABLED;
     }
 
@@ -16637,8 +16622,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     if (!_LoadHomeBind(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADHOMEBIND)))
         return false;
 
-    InitPrimaryProfessions();                               // to max set before any spell loaded
-
     // init saved position, and fix it later if problematic
     uint32 transGUID = fields[30].GetUInt32();
     Relocate(fields[12].GetFloat(), fields[13].GetFloat(), fields[14].GetFloat(), fields[16].GetFloat());
@@ -21799,11 +21782,6 @@ void Player::UpdateVisibilityForPlayer()
     notifier.SendToSelf();   // send gathered data
 }
 
-void Player::InitPrimaryProfessions()
-{
-    SetFreePrimaryProfessions(2);
-}
-
 void Player::ModifyMoney(int32 d)
 {
     sScriptMgr->OnPlayerMoneyChanged(this, d);
@@ -23849,13 +23827,13 @@ void Player::_LoadSkills(PreparedQueryResult result)
                 continue;
             }
 
-            // enable unlearn button for primary professions only
-            if (pSkill->categoryId == SKILL_CATEGORY_PROFESSION)
-                SetUInt32Value(PLAYER_SKILL_INDEX(count), MAKE_PAIR32(skill, 1));
-            else
-                SetUInt32Value(PLAYER_SKILL_INDEX(count), MAKE_PAIR32(skill, 0));
+            SetUInt32Value(PLAYER_SKILL_INDEX(count), MAKE_PAIR32(skill, 0));
 
-            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), MAKE_SKILL_VALUE(value, max));
+            if (pSkill->categoryId == SKILL_CATEGORY_PROFESSION)
+                SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), MAKE_SKILL_VALUE(450, 450));
+            else
+                SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), MAKE_SKILL_VALUE(value, max));
+
             SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(count), 0);
 
             mSkillStatus.insert(SkillStatusMap::value_type(skill, SkillStatusData(count, SKILL_UNCHANGED)));
