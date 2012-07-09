@@ -221,7 +221,7 @@ public:
                 break;
             case GOSSIP_ACTION_INFO_DEF+36:
                 player->CLOSE_GOSSIP_MENU();
-                if (player->isInCombat())
+                if (player->isInCombat() || player->duel)
                 {
                     ChatHandler(player).PSendSysMessage("|cfff4b25eПомошник шепчет:|r |cfffcedbbВы в бою и не можете использовать этот сервис.|r");
                     return true;
