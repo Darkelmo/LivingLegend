@@ -2110,9 +2110,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     }
     else
     {
-        if (getClass() == CLASS_DEATH_KNIGHT && GetMapId() == 609 && !isGameMaster() && !HasSpell(50977))
-            return false;
-
         // far teleport to another map
         Map* oldmap = IsInWorld() ? GetMap() : NULL;
         // check if we can enter before stopping combat / removing pet / totems / interrupting spells
@@ -3016,10 +3013,8 @@ void Player::InitTalentForLevel()
             m_activeSpec = 0;
         }
 
-        uint32 talentPointsForLevel = CalculateTalentsPoints();
-
         // if used more that have then reset
-        if (m_usedTalentCount > talentPointsForLevel)
+        if (m_usedTalentCount > 71)
         {
             if (!AccountMgr::IsAdminAccount(GetSession()->GetSecurity()))
                 resetTalents(true);
@@ -3028,7 +3023,7 @@ void Player::InitTalentForLevel()
         }
         // else update amount of free points
         else
-            SetFreeTalentPoints(talentPointsForLevel - m_usedTalentCount);
+            SetFreeTalentPoints(71 - m_usedTalentCount);
     }
 
     if (!GetSession()->PlayerLoading())
@@ -4245,11 +4240,9 @@ bool Player::resetTalents(bool no_cost)
     if (HasAtLoginFlag(AT_LOGIN_RESET_TALENTS))
         RemoveAtLoginFlag(AT_LOGIN_RESET_TALENTS, true);
 
-    uint32 talentPointsForLevel = CalculateTalentsPoints();
-
     if (m_usedTalentCount == 0)
     {
-        SetFreeTalentPoints(talentPointsForLevel);
+        SetFreeTalentPoints(71);
         return false;
     }
 
@@ -4300,7 +4293,7 @@ bool Player::resetTalents(bool no_cost)
     _SaveSpells(trans);
     CharacterDatabase.CommitTransaction(trans);
 
-    SetFreeTalentPoints(talentPointsForLevel);
+    SetFreeTalentPoints(71);
 
     if (!no_cost)
     {
@@ -7487,10 +7480,6 @@ void Player::DuelComplete(DuelCompleteType type)
                 // Honor points after duel (the winner) - ImpConfig
                 if (uint32 amount = sWorld->getIntConfig(CONFIG_HONOR_AFTER_DUEL))
                     duel->opponent->RewardHonor(NULL, 1, amount);
-
-                //Credit for quest Death's Challenge
-                if (getClass() == CLASS_DEATH_KNIGHT && duel->opponent->GetQuestStatus(12733) == QUEST_STATUS_INCOMPLETE)
-                    duel->opponent->CastSpell(duel->opponent, 52994, true);
             }
             break;
         default:
@@ -11813,25 +11802,12 @@ InventoryResult Player::CanRollForItemInLFG(ItemTemplate const* proto, WorldObje
     if (proto->Class == ITEM_CLASS_ARMOR && proto->SubClass > ITEM_SUBCLASS_ARMOR_MISC && proto->SubClass < ITEM_SUBCLASS_ARMOR_BUCKLER && proto->InventoryType != INVTYPE_CLOAK)
     {
         if (_class == CLASS_WARRIOR || _class == CLASS_PALADIN || _class == CLASS_DEATH_KNIGHT)
-        {
-            if (getLevel() < 40)
-            {
-                if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
-                    return EQUIP_ERR_CANT_DO_RIGHT_NOW;
-            }
-            else if (proto->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
+            if (proto->SubClass != ITEM_SUBCLASS_ARMOR_PLATE)
                 return EQUIP_ERR_CANT_DO_RIGHT_NOW;
-        }
-        else if (_class == CLASS_HUNTER || _class == CLASS_SHAMAN)
-        {
-            if (getLevel() < 40)
-            {
-                if (proto->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
-                    return EQUIP_ERR_CANT_DO_RIGHT_NOW;
-            }
-            else if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
+
+        if (_class == CLASS_HUNTER || _class == CLASS_SHAMAN)
+            if (proto->SubClass != ITEM_SUBCLASS_ARMOR_MAIL)
                 return EQUIP_ERR_CANT_DO_RIGHT_NOW;
-        }
 
         if (_class == CLASS_ROGUE || _class == CLASS_DRUID)
             if (proto->SubClass != ITEM_SUBCLASS_ARMOR_LEATHER)
@@ -21550,8 +21526,6 @@ WorldLocation Player::GetStartPosition() const
 {
     PlayerInfo const* info = sObjectMgr->GetPlayerInfo(getRace(), getClass());
     uint32 mapId = info->mapId;
-    if (getClass() == CLASS_DEATH_KNIGHT && HasSpell(50977))
-        mapId = 0;
     return WorldLocation(mapId, info->positionX, info->positionY, info->positionZ, 0);
 }
 
@@ -23746,22 +23720,6 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
     }
     else
         SendEquipError(msg, NULL, NULL, item->itemid);
-}
-
-uint32 Player::CalculateTalentsPoints() const
-{
-    uint32 base_talent = getLevel() < 10 ? 0 : getLevel()-9;
-
-    if (getClass() != CLASS_DEATH_KNIGHT || GetMapId() != 609)
-        return uint32(base_talent);
-
-    uint32 talentPointsForLevel = getLevel() < 56 ? 0 : getLevel() - 55;
-    talentPointsForLevel += m_questRewardTalentCount;
-
-    if (talentPointsForLevel > base_talent)
-        talentPointsForLevel = base_talent;
-
-    return uint32(talentPointsForLevel);
 }
 
 bool Player::IsKnowHowFlyIn(uint32 mapid, uint32 zone) const

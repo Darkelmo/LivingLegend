@@ -1664,8 +1664,6 @@ class Player : public Unit, public GridObject<Player>
         bool AddTalent(uint32 spellId, uint8 spec, bool learning);
         bool HasTalent(uint32 spell_id, uint8 spec) const;
 
-        uint32 CalculateTalentsPoints() const;
-
         // Dual Spec
         void UpdateSpecCount(uint8 count);
         uint32 GetActiveSpec() { return m_activeSpec; }
