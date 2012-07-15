@@ -3551,6 +3551,18 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->manaCost = 0;
                 spellInfo->manaPerSecond = 0;
                 break;
+            case 53323:
+            case 53331:
+            case 53341:
+            case 53343:
+            case 53344:
+            case 55342:
+            case 54446:
+            case 54447:
+            case 62158:
+            case 70164:
+                spellInfo->RequiresSpellFocus = 0;
+                break;
             default:
                 break;
         }
