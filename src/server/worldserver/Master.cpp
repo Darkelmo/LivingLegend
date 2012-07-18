@@ -84,7 +84,7 @@ public:
     {
         if (!_delaytime)
             return;
-        sLog->outString("Starting up anti-freeze thread (%u seconds max stuck time)...", _delaytime/1000);
+
         m_loops = 0;
         w_loops = 0;
         m_lastchange = 0;
@@ -124,18 +124,8 @@ int Master::Run()
     BigNumber seed1;
     seed1.SetRand(16 * 8);
 
-    sLog->outString("%s (worldserver-daemon)", _FULLVERSION);
-    sLog->outString("<Ctrl-C> to stop.\n");
-
-    sLog->outString(" ______                       __");
-    sLog->outString("/\\__  _\\       __          __/\\ \\__");
-    sLog->outString("\\/_/\\ \\/ _ __ /\\_\\    ___ /\\_\\ \\, _\\  __  __");
-    sLog->outString("   \\ \\ \\/\\`'__\\/\\ \\ /' _ `\\/\\ \\ \\ \\/ /\\ \\/\\ \\");
-    sLog->outString("    \\ \\ \\ \\ \\/ \\ \\ \\/\\ \\/\\ \\ \\ \\ \\ \\_\\ \\ \\_\\ \\");
-    sLog->outString("     \\ \\_\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_\\ \\__\\\\/`____ \\");
-    sLog->outString("      \\/_/\\/_/   \\/_/\\/_/\\/_/\\/_/\\/__/ `/___/> \\");
-    sLog->outString("                                 C O R E  /\\___/");
-    sLog->outString("http://TrinityCore.org                    \\/__/\n");
+    sLog->outString("<Ctrl-C> для завершения.\n");
+    sLog->outString("Открытие соединения с базой данных:");
 
     /// worldserver PID file creation
     std::string pidfile = ConfigMgr::GetStringDefault("PidFile", "");
@@ -228,11 +218,11 @@ int Master::Run()
         //if (Prio && (m_ServiceStatus == -1)  /* need set to default process priority class in service mode*/)
         if (Prio)
         {
-            if (SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS))
-                sLog->outString("worldserver process priority class set to HIGH");
-            else
+            if (!SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS))
+            {
                 sLog->outError("Can't set worldserver process priority class.");
-            sLog->outString("");
+                sLog->outString("");
+            }
         }
     }
     #endif
@@ -265,8 +255,6 @@ int Master::Run()
     // set server online (allow connecting now)
     LoginDatabase.DirectPExecute("UPDATE realmlist SET flag = flag & ~%u, population = 0 WHERE id = '%u'", REALM_FLAG_INVALID, realmID);
 
-    sLog->outString("%s (worldserver-daemon) ready...", _FULLVERSION);
-
     // when the main thread closes the singletons get unloaded
     // since worldrunnable uses them, it will crash if unloaded after master
     world_thread.wait();
@@ -287,7 +275,7 @@ int Master::Run()
 
     _StopDB();
 
-    sLog->outString("Halting process...");
+    sLog->outString("Закрытие процесса...");
 
     if (cliThread)
     {
@@ -434,7 +422,7 @@ bool Master::_StartDB()
         sLog->outError("Realm ID not defined in configuration file");
         return false;
     }
-    sLog->outString("Realm running as realm ID %d", realmID);
+    sLog->outString("--\n\nID запускаемого реалма: %d", realmID);
 
     ///- Clean the database before starting
     ClearOnlineAccounts();
@@ -444,7 +432,6 @@ bool Master::_StartDB()
 
     sWorld->LoadDBVersion();
 
-    sLog->outString("Using World DB: %s", sWorld->GetDBVersion());
     return true;
 }
 

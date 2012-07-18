@@ -123,10 +123,11 @@ bool MySQLConnection::Open()
     {
         if (!m_reconnecting)
         {
-            sLog->outSQLDriver("MySQL client library: %s", mysql_get_client_info());
-            sLog->outSQLDriver("MySQL server ver: %s ", mysql_get_server_info(m_Mysql));
+            sLog->outSQLDriver("MySQL клиентская библиотека: %s", mysql_get_client_info());
+            sLog->outSQLDriver("MySQL библиотека на сервере: %s ", mysql_get_server_info(m_Mysql));
             if (mysql_get_server_version(m_Mysql) != mysql_get_client_version())
-                sLog->outSQLDriver("[WARNING] MySQL client/server version mismatch; may conflict with behaviour of prepared statements.");
+                sLog->outSQLDriver("[ВНИМАНИЕ] MySQL клиент/сервер версии не совпадают. Могут возникнуть "
+                    "конфликты с поведением подготовленных выражений.");
         }
 
         sLog->outDetail("Connected to MySQL database at %s", m_connectionInfo.host.c_str());

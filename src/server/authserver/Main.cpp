@@ -92,25 +92,19 @@ extern int main(int argc, char **argv)
 
     if (!ConfigMgr::Load(cfg_file))
     {
-        sLog->outError("Invalid or missing configuration file : %s", cfg_file);
-        sLog->outError("Verify that the file exists and has \'[authserver]\' written in the top of the file!");
+        sLog->outError("Файл конфигурации (%s) отсутствует или содержит ошибки", cfg_file);
         return 1;
     }
     sLog->Initialize();
 
-    sLog->outString("%s (authserver)", _FULLVERSION);
-    sLog->outString("<Ctrl-C> to stop.\n");
-    sLog->outString("Using configuration file %s.", cfg_file);
-
-    sLog->outDetail("%s (Library: %s)", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+    sLog->outString("<Ctrl-C> для завершения.\n");
+    sLog->outString("Открытие соединения с базой данных:");
 
 #if defined (ACE_HAS_EVENT_POLL) || defined (ACE_HAS_DEV_POLL)
     ACE_Reactor::instance(new ACE_Reactor(new ACE_Dev_Poll_Reactor(ACE::max_handles(), 1), 1), true);
 #else
     ACE_Reactor::instance(new ACE_Reactor(new ACE_TP_Reactor(), true), true);
 #endif
-
-    sLog->outBasic("Max allowed open files is %d", ACE::max_handles());
 
     // authserver PID file creation
     std::string pidfile = ConfigMgr::GetStringDefault("PidFile", "");
@@ -134,7 +128,7 @@ extern int main(int argc, char **argv)
     sRealmList->Initialize(ConfigMgr::GetIntDefault("RealmsStateUpdateDelay", 20));
     if (sRealmList->size() == 0)
     {
-        sLog->outError("No valid realms specified.");
+        sLog->outError("Не указано ни одного реалма.");
         return 1;
     }
 
@@ -188,11 +182,11 @@ extern int main(int argc, char **argv)
 
         if (Prio)
         {
-            if (SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS))
-                sLog->outString("The auth server process priority class has been set to HIGH");
-            else
+            if (!SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS))
+            {
                 sLog->outError("Can't set auth server process priority class.");
-            sLog->outString();
+                sLog->outString();
+            }
         }
     }
 #endif
@@ -221,7 +215,7 @@ extern int main(int argc, char **argv)
     // Close the Database Pool and library
     StopDB();
 
-    sLog->outString("Halting process...");
+    sLog->outString("Закрытие процесса...");
     return 0;
 }
 

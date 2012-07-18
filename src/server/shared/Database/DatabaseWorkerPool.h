@@ -64,9 +64,6 @@ class DatabaseWorkerPool
             bool res = true;
             _connectionInfo = MySQLConnectionInfo(infoString);
 
-            sLog->outSQLDriver("Opening DatabasePool '%s'. Asynchronous connections: %u, synchronous connections: %u.",
-                GetDatabaseName(), async_threads, synch_threads);
-
             //! Open asynchronous connections (delayed operations)
             _connections[IDX_ASYNC].resize(async_threads);
             for (uint8 i = 0; i < async_threads; ++i)
@@ -88,11 +85,12 @@ class DatabaseWorkerPool
             }
 
             if (res)
-                sLog->outSQLDriver("DatabasePool '%s' opened successfully. %u total connections running.", GetDatabaseName(),
+                sLog->outSQLDriver("Соединение с '%s' открыто успешно. Запущено соединений: %u.", GetDatabaseName(),
                     (_connectionCount[IDX_SYNCH] + _connectionCount[IDX_ASYNC]));
             else
                 sLog->outError("DatabasePool %s NOT opened. There were errors opening the MySQL connections. Check your SQLDriverLogFile "
                     "for specific errors.", GetDatabaseName());
+
             return res;
         }
 

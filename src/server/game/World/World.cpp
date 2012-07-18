@@ -742,13 +742,11 @@ void World::LoadConfigSettings(bool reload)
     else
     {
         m_dataPath = dataPath;
-        sLog->outString("Using DataDir %s", m_dataPath.c_str());
     }
 
     std::string ignoreSpellIds = ConfigMgr::GetStringDefault("vmap.ignoreSpellIds", "");
 
     VMAP::VMapFactory::preventSpellsFromBeingTestedForLoS(ignoreSpellIds.c_str());
-    sLog->outString("WORLD: VMap support included.");
 
     m_int_configs[CONFIG_HONOR_AFTER_DUEL] = ConfigMgr::GetIntDefault("HonorPointsAfterDuel", 0);
     m_bool_configs[CONFIG_PVP_TOKEN_ENABLE] = ConfigMgr::GetBoolDefault("PvPToken.Enable", false);
@@ -821,7 +819,7 @@ void World::SetInitialWorldSettings()
         || !MapManager::ExistMapAndVMap(530, 10349.6f, -6357.29f)
         || !MapManager::ExistMapAndVMap(530, -3961.64f, -13931.2f))
     {
-        sLog->outError("Correct *.map files not found in path '%smaps' or *.vmtree/*.vmtile files in '%svmaps'. Please place *.map/*.vmtree/*.vmtile files in appropriate directories or correct the DataDir value in the worldserver.conf file.", m_dataPath.c_str(), m_dataPath.c_str());
+        sLog->outError("Нужные *.map файлы в '%smaps' или *.vmtree/*.vmtile файлы в '%svmaps' не найдены. Разместите *.map/*.vmtree/*.vmtile файлы в соответствующую директорию указанную в опции DataDir в файле конфигурации (worldserver.conf).", m_dataPath.c_str(), m_dataPath.c_str());
         exit(1);
     }
 
@@ -1315,23 +1313,20 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading Warden Action Overrides..." );
     sWardenCheckMgr->LoadWardenOverrides();
 
-    sLog->outString("Deleting expired bans...");
     LoginDatabase.Execute("DELETE FROM ip_banned WHERE unbandate <= UNIX_TIMESTAMP() AND unbandate<>bandate");      // One-time query
 
-    sLog->outString("Calculate next daily quest reset time...");
     InitDailyQuestResetTime();
-
-    sLog->outString("Calculate next weekly quest reset time..." );
     InitWeeklyQuestResetTime();
-
-    sLog->outString("Calculate random battleground reset time..." );
     InitRandomBGResetTime();
-
     LoadCharacterNameData();
 
     uint32 startupDuration = GetMSTimeDiffToNow(startupBegin);
     sLog->outString();
-    sLog->outString("WORLD: World initialized in %u minutes %u seconds", (startupDuration / 60000), ((startupDuration % 60000) / 1000));
+    sLog->outString("WORLD: Сервер мира запущен за %u %s %u %s",
+        (startupDuration / 60000),
+        ending((startupDuration / 60000), "минут", "минуту", "минуты"),
+        ((startupDuration % 60000) / 1000),
+        ending(((startupDuration % 60000) / 1000), "секунд", "секунду", "секунды")),
     sLog->outString();
 }
 
@@ -2462,10 +2457,7 @@ void World::LoadCharacterNameData()
 
     QueryResult result = CharacterDatabase.Query("SELECT guid, name, race, gender, class FROM characters WHERE deleteDate IS NULL");
     if (!result)
-    {
-        sLog->outError("No character name data loaded, empty query");
         return;
-    }
 
     uint32 count = 0;
 
