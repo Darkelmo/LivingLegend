@@ -531,12 +531,6 @@ class BattlegroundSA : public Battleground
         /// Update score board
         void UpdatePlayerScore(Player* Source, uint32 type, uint32 value, bool doAddHonor = true);
 
-        // Achievement: Defense of the Ancients
-        bool gateDestroyed;
-
-        // Achievement: Not Even a Scratch
-        bool notEvenAScratch(uint32 team) const { return _notEvenAScratch[GetTeamIndexByTeamId(team)]; }
-
         /// Id of attacker team
         TeamId Attackers;
 
@@ -617,8 +611,5 @@ class BattlegroundSA : public Battleground
         /// for know if second round has been init
         bool InitSecondRound;
         std::map<uint32/*id*/, uint32/*timer*/> DemoliserRespawnList;
-
-        // Achievement: Not Even a Scratch
-        bool _notEvenAScratch[BG_TEAMS_COUNT];
 };
 #endif

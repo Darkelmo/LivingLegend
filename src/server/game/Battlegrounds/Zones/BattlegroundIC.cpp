@@ -279,19 +279,6 @@ void BattlegroundIC::StartingEventOpenDoors()
     }
 }
 
-bool BattlegroundIC::IsAllNodesConrolledByTeam(uint32 team) const
-{
-    uint32 count = 0;
-    ICNodeState controlledState = team == ALLIANCE ? NODE_STATE_CONTROLLED_A : NODE_STATE_CONTROLLED_H;
-    for (int i = 0; i < NODE_TYPE_WORKSHOP; ++i)
-    {
-        if (nodePoint[i].nodeState == controlledState)
-            count++;
-    }
-
-    return count == NODE_TYPE_WORKSHOP;
-}
-
 void BattlegroundIC::AddPlayer(Player* player)
 {
     Battleground::AddPlayer(player);
@@ -443,11 +430,6 @@ void BattlegroundIC::HandleKillUnit(Creature* unit, Player* killer)
         RewardHonorToTeam(WINNER_HONOR_AMOUNT, ALLIANCE);
         EndBattleground(ALLIANCE);
     }
-
-    //Achievement Mowed Down
-    // TO-DO: This should be done on the script of each vehicle of the BG.
-    if (unit->IsVehicle())
-        killer->CastSpell(killer, SPELL_DESTROYED_VEHICLE_ACHIEVEMENT, true);
 }
 
 void BattlegroundIC::HandleKillPlayer(Player* player, Player* killer)

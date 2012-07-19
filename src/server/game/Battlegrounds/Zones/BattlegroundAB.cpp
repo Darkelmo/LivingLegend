@@ -143,11 +143,6 @@ void BattlegroundAB::PostUpdateImpl(uint32 diff)
                     UpdateWorldState(BG_AB_OP_RESOURCES_ALLY, m_TeamScores[team]);
                 if (team == BG_TEAM_HORDE)
                     UpdateWorldState(BG_AB_OP_RESOURCES_HORDE, m_TeamScores[team]);
-                // update achievement flags
-                // we increased m_TeamScores[team] so we just need to check if it is 500 more than other teams resources
-                uint8 otherTeam = (team + 1) % BG_TEAMS_COUNT;
-                if (m_TeamScores[team] > m_TeamScores[otherTeam] + 500)
-                    m_TeamScores500Disadvantage[otherTeam] = true;
             }
         }
 
@@ -191,9 +186,6 @@ void BattlegroundAB::StartingEventOpenDoors()
     }
     DoorOpen(BG_AB_OBJECT_GATE_A);
     DoorOpen(BG_AB_OBJECT_GATE_H);
-
-    // Achievement: Let's Get This Done
-    StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, AB_EVENT_START_BATTLE);
 }
 
 void BattlegroundAB::AddPlayer(Player* player)
@@ -602,8 +594,6 @@ void BattlegroundAB::Reset()
     bool isBGWeekend = sBattlegroundMgr->IsBGWeekend(GetTypeID());
     m_HonorTics = (isBGWeekend) ? BG_AB_ABBGWeekendHonorTicks : BG_AB_NotABBGWeekendHonorTicks;
     m_ReputationTics = (isBGWeekend) ? BG_AB_ABBGWeekendReputationTicks : BG_AB_NotABBGWeekendReputationTicks;
-    m_TeamScores500Disadvantage[BG_TEAM_ALLIANCE] = false;
-    m_TeamScores500Disadvantage[BG_TEAM_HORDE]    = false;
 
     for (uint8 i = 0; i < BG_AB_DYNAMIC_NODES_COUNT; ++i)
     {
@@ -681,25 +671,12 @@ void BattlegroundAB::UpdatePlayerScore(Player* Source, uint32 type, uint32 value
     {
         case SCORE_BASES_ASSAULTED:
             ((BattlegroundABScore*)itr->second)->BasesAssaulted += value;
-            Source->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, AB_OBJECTIVE_ASSAULT_BASE);
             break;
         case SCORE_BASES_DEFENDED:
             ((BattlegroundABScore*)itr->second)->BasesDefended += value;
-            Source->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, AB_OBJECTIVE_DEFEND_BASE);
             break;
         default:
             Battleground::UpdatePlayerScore(Source, type, value, doAddHonor);
             break;
     }
-}
-
-bool BattlegroundAB::IsAllNodesConrolledByTeam(uint32 team) const
-{
-    uint32 count = 0;
-    for (int i = 0; i < BG_AB_DYNAMIC_NODES_COUNT; ++i)
-        if ((team == ALLIANCE && m_Nodes[i] == BG_AB_NODE_STATUS_ALLY_OCCUPIED) ||
-            (team == HORDE    && m_Nodes[i] == BG_AB_NODE_STATUS_HORDE_OCCUPIED))
-            ++count;
-
-    return count == BG_AB_DYNAMIC_NODES_COUNT;
 }

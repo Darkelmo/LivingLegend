@@ -660,8 +660,6 @@ enum Spells
     SPELL_PARACHUTE = 66656,
     SPELL_SLOW_FALL = 12438,
 
-    SPELL_DESTROYED_VEHICLE_ACHIEVEMENT = 68357,
-
     SPELL_DRIVING_CREDIT_DEMOLISHER = 68365,
     SPELL_DRIVING_CREDIT_GLAIVE = 68363,
     SPELL_DRIVING_CREDIT_SIEGE = 68364,
@@ -893,7 +891,6 @@ class BattlegroundIC : public Battleground
 
         uint32 GetNodeState(uint8 nodeType) { return (uint8)nodePoint[nodeType].nodeState; }
 
-        virtual bool IsAllNodesConrolledByTeam(uint32 team) const;  // overwrited
     private:
         uint32 closeFortressDoorsTimer;
         bool doorsClosed;

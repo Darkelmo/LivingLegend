@@ -40,7 +40,6 @@
 #include "WaypointManager.h"
 #include "GossipDef.h"
 #include "Vehicle.h"
-#include "AchievementMgr.h"
 #include "DisableMgr.h"
 #include "ScriptMgr.h"
 #include "SpellScript.h"
@@ -5864,8 +5863,8 @@ void ObjectMgr::LoadAccessRequirements()
 
     _accessRequirementStore.clear();                                  // need for reload case
 
-    //                                               0      1           2          3          4     5      6             7             8                      9
-    QueryResult result = WorldDatabase.Query("SELECT mapid, difficulty, level_min, level_max, item, item2, quest_done_A, quest_done_H, completed_achievement, quest_failed_text FROM access_requirement");
+    //                                               0      1           2          3          4     5      6             7             8
+    QueryResult result = WorldDatabase.Query("SELECT mapid, difficulty, level_min, level_max, item, item2, quest_done_A, quest_done_H, quest_failed_text FROM access_requirement");
     if (!result)
     {
         sLog->outString(">> Loaded 0 access requirement definitions. DB table `access_requirement` is empty.");
@@ -5893,8 +5892,7 @@ void ObjectMgr::LoadAccessRequirements()
         ar.item2                    = fields[5].GetUInt32();
         ar.quest_A                  = fields[6].GetUInt32();
         ar.quest_H                  = fields[7].GetUInt32();
-        ar.achievement              = fields[8].GetUInt32();
-        ar.questFailedText          = fields[9].GetString();
+        ar.questFailedText          = fields[8].GetString();
 
         if (ar.item)
         {
@@ -5931,15 +5929,6 @@ void ObjectMgr::LoadAccessRequirements()
             {
                 sLog->outErrorDb("Required Horde Quest %u not exist for map %u difficulty %u, remove quest done requirement.", ar.quest_H, mapid, difficulty);
                 ar.quest_H = 0;
-            }
-        }
-
-        if (ar.achievement)
-        {
-            if (!sAchievementStore.LookupEntry(ar.achievement))
-            {
-                sLog->outErrorDb("Required Achievement %u not exist for map %u difficulty %u, remove quest done requirement.", ar.achievement, mapid, difficulty);
-                ar.achievement = 0;
             }
         }
 
@@ -7679,67 +7668,6 @@ bool ObjectMgr::DeleteGameTele(const std::string& name)
     return false;
 }
 
-void ObjectMgr::LoadMailLevelRewards()
-{
-    uint32 oldMSTime = getMSTime();
-
-    _mailLevelRewardStore.clear();                           // for reload case
-
-    //                                                 0        1             2            3
-    QueryResult result = WorldDatabase.Query("SELECT level, raceMask, mailTemplateId, senderEntry FROM mail_level_reward");
-
-    if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 level dependent mail rewards. DB table `mail_level_reward` is empty.");
-        sLog->outString();
-        return;
-    }
-
-    uint32 count = 0;
-
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint8 level           = fields[0].GetUInt8();
-        uint32 raceMask       = fields[1].GetUInt32();
-        uint32 mailTemplateId = fields[2].GetUInt32();
-        uint32 senderEntry    = fields[3].GetUInt32();
-
-        if (level > MAX_LEVEL)
-        {
-            sLog->outErrorDb("Table `mail_level_reward` have data for level %u that more supported by client (%u), ignoring.", level, MAX_LEVEL);
-            continue;
-        }
-
-        if (!(raceMask & RACEMASK_ALL_PLAYABLE))
-        {
-            sLog->outErrorDb("Table `mail_level_reward` have raceMask (%u) for level %u that not include any player races, ignoring.", raceMask, level);
-            continue;
-        }
-
-        if (!sMailTemplateStore.LookupEntry(mailTemplateId))
-        {
-            sLog->outErrorDb("Table `mail_level_reward` have invalid mailTemplateId (%u) for level %u that invalid not include any player races, ignoring.", mailTemplateId, level);
-            continue;
-        }
-
-        if (!GetCreatureTemplate(senderEntry))
-        {
-            sLog->outErrorDb("Table `mail_level_reward` have not existed sender creature entry (%u) for level %u that invalid not include any player races, ignoring.", senderEntry, level);
-            continue;
-        }
-
-        _mailLevelRewardStore[level].push_back(MailLevelReward(raceMask, mailTemplateId, senderEntry));
-
-        ++count;
-    }
-    while (result->NextRow());
-
-    sLog->outString(">> Loaded %u level dependent mail rewards in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    sLog->outString();
-}
-
 void ObjectMgr::AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel)
 {
     if (entry >= TRINITY_TRAINER_START_REF)
@@ -8192,8 +8120,6 @@ void ObjectMgr::LoadScriptNames()
 
     _scriptNamesStore.push_back("");
     QueryResult result = WorldDatabase.Query(
-      "SELECT DISTINCT(ScriptName) FROM achievement_criteria_data WHERE ScriptName <> '' AND type = 11 "
-      "UNION "
       "SELECT DISTINCT(ScriptName) FROM battleground_template WHERE ScriptName <> '' "
       "UNION "
       "SELECT DISTINCT(ScriptName) FROM creature_template WHERE ScriptName <> '' "
@@ -8387,43 +8313,6 @@ void ObjectMgr::LoadCreatureClassLevelStats()
     }
 
     sLog->outString(">> Loaded %u creature base stats in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    sLog->outString();
-}
-
-void ObjectMgr::LoadFactionChangeAchievements()
-{
-    uint32 oldMSTime = getMSTime();
-
-    QueryResult result = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_achievement");
-
-    if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 faction change achievement pairs. DB table `player_factionchange_achievement` is empty.");
-        sLog->outString();
-        return;
-    }
-
-    uint32 count = 0;
-
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint32 alliance = fields[0].GetUInt32();
-        uint32 horde = fields[1].GetUInt32();
-
-        if (!sAchievementStore.LookupEntry(alliance))
-            sLog->outErrorDb("Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", alliance);
-        else if (!sAchievementStore.LookupEntry(horde))
-            sLog->outErrorDb("Achievement %u referenced in `player_factionchange_achievement` does not exist, pair skipped!", horde);
-        else
-            FactionChange_Achievements[alliance] = horde;
-
-        ++count;
-    }
-    while (result->NextRow());
-
-    sLog->outString(">> Loaded %u faction change achievement pairs in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
 

@@ -121,9 +121,6 @@ void BattlegroundEY::StartingEventOpenDoors()
         uint8 buff = urand(0, 2);
         SpawnBGObject(BG_EY_OBJECT_SPEEDBUFF_FEL_REAVER + buff + i * 3, RESPAWN_IMMEDIATELY);
     }
-
-    // Achievement: Flurry
-    StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, EY_EVENT_START_BATTLE);
 }
 
 void BattlegroundEY::AddPoints(uint32 Team, uint32 Points)
@@ -816,7 +813,6 @@ void BattlegroundEY::UpdatePlayerScore(Player* Source, uint32 type, uint32 value
     {
         case SCORE_FLAG_CAPTURES:                           // flags captured
             ((BattlegroundEYScore*)itr->second)->FlagCaptures += value;
-            Source->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE, EY_OBJECTIVE_CAPTURE_FLAG);
             break;
         default:
             Battleground::UpdatePlayerScore(Source, type, value, doAddHonor);
@@ -925,14 +921,4 @@ WorldSafeLocsEntry const* BattlegroundEY::GetClosestGraveYard(Player* player)
     }
 
     return nearestEntry;
-}
-
-bool BattlegroundEY::IsAllNodesConrolledByTeam(uint32 team) const
-{
-    uint32 count = 0;
-    for (int i = 0; i < EY_POINTS_MAX; ++i)
-        if (m_PointOwnedByTeam[i] == team && m_PointState[i] == EY_POINT_UNDER_CONTROL)
-            ++count;
-
-    return count == EY_POINTS_MAX;
 }

@@ -81,12 +81,6 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
             }
             break;
         }
-        case CONDITION_ACHIEVEMENT:
-        {
-            if (Player* player = object->ToPlayer())
-                condMeets = player->GetAchievementMgr().HasAchieved(ConditionValue1);
-            break;
-        }
         case CONDITION_TEAM:
         {
             if (Player* player = object->ToPlayer())
@@ -320,9 +314,6 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
             mask |= GRID_MAP_TYPE_MASK_ALL;
             break;
         case CONDITION_REPUTATION_RANK:
-            mask |= GRID_MAP_TYPE_MASK_PLAYER;
-            break;
-        case CONDITION_ACHIEVEMENT:
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         case CONDITION_TEAM:
@@ -1550,21 +1541,6 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 sLog->outErrorDb("ActiveEvent condition has useless data in value2 (%u)!", cond->ConditionValue2);
             if (cond->ConditionValue3)
                 sLog->outErrorDb("ActiveEvent condition has useless data in value3 (%u)!", cond->ConditionValue3);
-            break;
-        }
-        case CONDITION_ACHIEVEMENT:
-        {
-            AchievementEntry const* achievement = sAchievementStore.LookupEntry(cond->ConditionValue1);
-            if (!achievement)
-            {
-                sLog->outErrorDb("Achivement condition has non existing achivement id (%u), skipped", cond->ConditionValue1);
-                return false;
-            }
-
-            if (cond->ConditionValue2)
-                sLog->outErrorDb("Achivement condition has useless data in value2 (%u)!", cond->ConditionValue2);
-            if (cond->ConditionValue3)
-                sLog->outErrorDb("Achivement condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
         case CONDITION_CLASS:

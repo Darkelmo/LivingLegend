@@ -55,9 +55,6 @@ void BattlegroundSA::Reset()
     for (uint8 i = 0; i <= 5; i++)
         GateStatus[i] = BG_SA_GATE_OK;
     ShipsStarted = false;
-    gateDestroyed = false;
-    _notEvenAScratch[BG_TEAM_ALLIANCE] = true;
-    _notEvenAScratch[BG_TEAM_HORDE] = true;
     Status = BG_SA_WARMUP;
 }
 
@@ -313,7 +310,6 @@ void BattlegroundSA::PostUpdateImpl(uint32 diff)
             ToggleTimer();
             DemolisherStartState(false);
             Status = BG_SA_ROUND_ONE;
-            StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, (Attackers == TEAM_ALLIANCE)?23748:21702);
         }
         if (TotalTime >= BG_SA_BOAT_START)
             StartShips();
@@ -333,7 +329,6 @@ void BattlegroundSA::PostUpdateImpl(uint32 diff)
             ToggleTimer();
             DemolisherStartState(false);
             Status = BG_SA_ROUND_TWO;
-            StartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, (Attackers == TEAM_ALLIANCE)?23748:21702);
         }
         if (TotalTime >= 30000)
         {
@@ -558,10 +553,7 @@ void BattlegroundSA::EventPlayerDamagedGO(Player* /*player*/, GameObject* go, ui
 void BattlegroundSA::HandleKillUnit(Creature* creature, Player* killer)
 {
     if (creature->GetEntry() == NPC_DEMOLISHER_SA)
-    {
         UpdatePlayerScore(killer, SCORE_DESTROYED_DEMOLISHER, 1);
-        _notEvenAScratch[Attackers] = false;
-    }
 }
 
 /*
@@ -618,7 +610,6 @@ void BattlegroundSA::DestroyGate(Player* player, GameObject* go)
             if (uws)
                 UpdateWorldState(uws, GateStatus[i]);
             bool rewardHonor = true;
-            gateDestroyed = true;
             switch (i)
             {
                 case BG_SA_GREEN_GATE:
@@ -807,13 +798,6 @@ void BattlegroundSA::EventPlayerUsedGO(Player* Source, GameObject* object)
             {
                 RoundScores[0].winner = Attackers;
                 RoundScores[0].time = TotalTime;
-                //Achievement Storm the Beach (1310)
-                for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
-                {
-                    if (Player* player = ObjectAccessor::FindPlayer(itr->first))
-                        if (player->GetTeamId() == Attackers)
-                            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, 65246);
-                }
 
                 Attackers = (Attackers == TEAM_ALLIANCE) ? TEAM_HORDE : TEAM_ALLIANCE;
                 Status = BG_SA_SECOND_WARMUP;
@@ -831,13 +815,6 @@ void BattlegroundSA::EventPlayerUsedGO(Player* Source, GameObject* object)
                 RoundScores[1].winner = Attackers;
                 RoundScores[1].time = TotalTime;
                 ToggleTimer();
-                //Achievement Storm the Beach (1310)
-                for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
-                {
-                    if (Player* player = ObjectAccessor::FindPlayer(itr->first))
-                        if (player->GetTeamId() == Attackers && RoundScores[1].winner == Attackers)
-                            player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, 65246);
-                }
 
                 if (RoundScores[0].time == RoundScores[1].time)
                     EndBattleground(0);

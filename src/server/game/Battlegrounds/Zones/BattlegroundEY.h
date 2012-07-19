@@ -220,8 +220,6 @@ enum EYBattlegroundObjectTypes
 #define BG_EY_NotEYWeekendHonorTicks    260
 #define BG_EY_EYWeekendHonorTicks       160
 
-#define EY_EVENT_START_BATTLE           13180 // Achievement: Flurry
-
 enum BG_EY_Score
 {
     BG_EY_WARNING_NEAR_VICTORY_SCORE    = 1400,
@@ -369,8 +367,6 @@ class BattlegroundEY : public Battleground
         virtual void EventPlayerClickedOnFlag(Player* Source, GameObject* target_obj);
         virtual void EventPlayerDroppedFlag(Player* Source);
 
-        /* achievement req. */
-        bool IsAllNodesConrolledByTeam(uint32 team) const;
     private:
         virtual void PostUpdateImpl(uint32 diff);
 

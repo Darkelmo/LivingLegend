@@ -18,13 +18,12 @@
 
 #ifndef _PLAYER_H
 #define _PLAYER_H
-
-#include "AchievementMgr.h"
 #include "Battleground.h"
 #include "Bag.h"
 #include "Common.h"
 #include "DatabaseEnv.h"
 #include "DBCEnums.h"
+#include "DBCStores.h"
 #include "GroupReference.h"
 #include "ItemPrototype.h"
 #include "Item.h"
@@ -392,7 +391,7 @@ enum PlayerFlags
     PLAYER_FLAGS_COMMENTATOR2      = 0x00400000,
     PLAYER_ALLOW_ONLY_ABILITY      = 0x00800000,                // used by bladestorm and killing spree, allowed only spells with SPELL_ATTR0_REQ_AMMO, SPELL_EFFECT_ATTACK, checked only for active player
     PLAYER_FLAGS_UNK24             = 0x01000000,                // disabled all melee ability on tab include autoattack
-    PLAYER_FLAGS_NO_XP_GAIN        = 0x02000000,
+    // unused                      = 0x02000000,
     PLAYER_FLAGS_UNK26             = 0x04000000,
     PLAYER_FLAGS_UNK27             = 0x08000000,
     PLAYER_FLAGS_UNK28             = 0x10000000,
@@ -792,19 +791,17 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADDECLINEDNAMES        = 15,
     PLAYER_LOGIN_QUERY_LOADGUILD                = 16,
     PLAYER_LOGIN_QUERY_LOADARENAINFO            = 17,
-    PLAYER_LOGIN_QUERY_LOADACHIEVEMENTS         = 18,
-    PLAYER_LOGIN_QUERY_LOADCRITERIAPROGRESS     = 19,
-    PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS        = 20,
-    PLAYER_LOGIN_QUERY_LOADBGDATA               = 21,
-    PLAYER_LOGIN_QUERY_LOADGLYPHS               = 22,
-    PLAYER_LOGIN_QUERY_LOADTALENTS              = 23,
-    PLAYER_LOGIN_QUERY_LOADACCOUNTDATA          = 24,
-    PLAYER_LOGIN_QUERY_LOADSKILLS               = 25,
-    PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS    = 26,
-    PLAYER_LOGIN_QUERY_LOADRANDOMBG             = 27,
-    PLAYER_LOGIN_QUERY_LOADBANNED               = 28,
-    PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW       = 29,
-    PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS  = 30,
+    PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS        = 18,
+    PLAYER_LOGIN_QUERY_LOADBGDATA               = 19,
+    PLAYER_LOGIN_QUERY_LOADGLYPHS               = 20,
+    PLAYER_LOGIN_QUERY_LOADTALENTS              = 21,
+    PLAYER_LOGIN_QUERY_LOADACCOUNTDATA          = 22,
+    PLAYER_LOGIN_QUERY_LOADSKILLS               = 23,
+    PLAYER_LOGIN_QUERY_LOADWEEKLYQUESTSTATUS    = 24,
+    PLAYER_LOGIN_QUERY_LOADRANDOMBG             = 25,
+    PLAYER_LOGIN_QUERY_LOADBANNED               = 26,
+    PLAYER_LOGIN_QUERY_LOADQUESTSTATUSREW       = 27,
+    PLAYER_LOGIN_QUERY_LOADSEASONALQUESTSTATUS  = 28,
     MAX_PLAYER_LOGIN_QUERY,
 };
 
@@ -852,7 +849,6 @@ struct AccessRequirement
     uint32 item2;
     uint32 quest_A;
     uint32 quest_H;
-    uint32 achievement;
     std::string questFailedText;
 };
 
@@ -1557,7 +1553,6 @@ class Player : public Unit, public GridObject<Player>
         {
             SetUInt32Value(PLAYER_FIELD_COINAGE, value);
             MoneyChanged(value);
-            UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_GOLD_VALUE_OWNED);
         }
 
         RewardedQuestSet const& getRewardedQuests() const { return m_RewardedQuests; }
@@ -2439,11 +2434,6 @@ class Player : public Unit, public GridObject<Player>
         void AddRunePower(uint8 index);
         void InitRunes();
 
-        AchievementMgr& GetAchievementMgr() { return m_achievementMgr; }
-        AchievementMgr const& GetAchievementMgr() const { return m_achievementMgr; }
-        void UpdateAchievementCriteria(AchievementCriteriaTypes type, uint32 miscValue1 = 0, uint32 miscValue2 = 0, Unit* unit = NULL);
-        void CompletedAchievement(AchievementEntry const* entry);
-
         bool HasTitle(uint32 bitIndex);
         bool HasTitle(CharTitlesEntry const* title) { return HasTitle(title->bit_index); }
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
@@ -2823,7 +2813,6 @@ class Player : public Unit, public GridObject<Player>
         uint32 m_temporaryUnsummonedPetNumber;
         uint32 m_oldpetspell;
 
-        AchievementMgr m_achievementMgr;
         ReputationMgr  m_reputationMgr;
 
         SpellCooldowns m_spellCooldowns;

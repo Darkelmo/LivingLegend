@@ -35,7 +35,6 @@ public:
     {
         static ChatCommand resetCommandTable[] =
         {
-            { "achievements",   SEC_ADMINISTRATOR,  true,  &HandleResetAchievementsCommand,     "", NULL },
             { "honor",          SEC_ADMINISTRATOR,  true,  &HandleResetHonorCommand,            "", NULL },
             { "level",          SEC_ADMINISTRATOR,  true,  &HandleResetLevelCommand,            "", NULL },
             { "spells",         SEC_ADMINISTRATOR,  true,  &HandleResetSpellsCommand,           "", NULL },
@@ -52,21 +51,6 @@ public:
         return commandTable;
     }
 
-    static bool HandleResetAchievementsCommand(ChatHandler* handler, char const* args)
-    {
-        Player* target;
-        uint64 targetGuid;
-        if (!handler->extractPlayerTarget((char*)args, &target, &targetGuid))
-            return false;
-
-        if (target)
-            target->GetAchievementMgr().Reset();
-        else
-            AchievementMgr::DeleteFromDB(GUID_LOPART(targetGuid));
-
-        return true;
-    }
-
     static bool HandleResetHonorCommand(ChatHandler* handler, char const* args)
     {
         Player* target;
@@ -78,7 +62,6 @@ public:
         target->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 0);
         target->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, 0);
         target->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, 0);
-        target->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
 
         return true;
     }

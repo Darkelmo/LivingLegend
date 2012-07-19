@@ -1638,18 +1638,6 @@ void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket & recv_data)
     sLog->outDebug(LOG_FILTER_NETWORKIO, "Client used \"/timetest %d\" command", mode);
 }
 
-void WorldSession::HandleQueryInspectAchievements(WorldPacket & recv_data)
-{
-    uint64 guid;
-    recv_data.readPackGUID(guid);
-
-    Player* player = ObjectAccessor::FindPlayer(guid);
-    if (!player)
-        return;
-
-    player->GetAchievementMgr().SendRespondInspectAchievements(_player);
-}
-
 void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& /*recv_data*/)
 {
     // empty opcode

@@ -438,9 +438,7 @@ void LFGMgr::InitializeLockedDungeons(Player* player)
             locktype = LFG_LOCKSTATUS_TOO_HIGH_LEVEL;
         else if (locktype == LFG_LOCKSTATUS_OK && ar)
         {
-            if (ar->achievement && !player->GetAchievementMgr().HasAchieved(ar->achievement))
-                locktype = LFG_LOCKSTATUS_RAID_LOCKED;       // FIXME: Check the correct lock value
-            else if (player->GetTeam() == ALLIANCE && ar->quest_A && !player->GetQuestRewardStatus(ar->quest_A))
+            if (player->GetTeam() == ALLIANCE && ar->quest_A && !player->GetQuestRewardStatus(ar->quest_A))
                 locktype = LFG_LOCKSTATUS_QUEST_NOT_COMPLETED;
             else if (player->GetTeam() == HORDE && ar->quest_H && !player->GetQuestRewardStatus(ar->quest_H))
                 locktype = LFG_LOCKSTATUS_QUEST_NOT_COMPLETED;
@@ -1894,10 +1892,6 @@ void LFGMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         sLog->outDebug(LOG_FILTER_LFG, "LFGMgr::RewardDungeonDoneFor: [" UI64FMTD "] dungeon %u is not random", guid, rDungeonId);
         return;
     }
-
-    // Update achievements
-    if (dungeon->difficulty == DUNGEON_DIFFICULTY_HEROIC)
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_LFD_TO_GROUP_WITH_PLAYERS, 1);
 
     LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
     if (!reward)

@@ -673,13 +673,8 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (victim->GetTypeId() == TYPEID_PLAYER)
             if (Battleground* bg = killer->GetBattleground())
                 bg->UpdatePlayerScore(killer, SCORE_DAMAGE_DONE, damage);
-
-        killer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DAMAGE_DONE, damage, 0, victim);
-        killer->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_DEALT, damage);
     }
 
-    if (victim->GetTypeId() == TYPEID_PLAYER)
-        victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HIT_RECEIVED, damage);
     else if (!victim->IsControlledByPlayer() || victim->IsVehicle())
     {
         if (!victim->ToCreature()->hasLootRecipient())
@@ -693,23 +688,11 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     {
         sLog->outStaticDebug("DealDamage: victim just died");
 
-        if (victim->GetTypeId() == TYPEID_PLAYER && victim != this)
-        {
-            victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, health);
-
-            // call before auras are removed
-            if (Player* killer = GetCharmerOrOwnerPlayerOrPlayerItself())
-                killer->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL, 1, 0, victim);
-        }
-
         Kill(victim, durabilityLoss);
     }
     else
     {
         sLog->outStaticDebug("DealDamageAlive");
-
-        if (victim->GetTypeId() == TYPEID_PLAYER)
-            victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
 
         victim->ModifyHealth(- (int32)damage);
 
@@ -5580,7 +5563,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     if (!instance)
                         return false;
 
-                    instance->DoCastSpellOnPlayers(65037);  // Achievement criteria marker
                     break;
                 }
                 // Dark Hunger (The Lich King encounter)
@@ -10014,22 +9996,8 @@ int32 Unit::DealHeal(Unit* victim, uint32 addhealth)
         unit = GetOwner();
 
     if (Player* player = unit->ToPlayer())
-    {
         if (Battleground* bg = player->GetBattleground())
             bg->UpdatePlayerScore(player, SCORE_HEALING_DONE, gain);
-
-        // use the actual gain, as the overheal shall not be counted, skip gain 0 (it ignored anyway in to criteria)
-        if (gain)
-            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HEALING_DONE, gain, 0, victim);
-
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HEAL_CASTED, addhealth);
-    }
-
-    if (Player* player = victim->ToPlayer())
-    {
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_HEALING_RECEIVED, gain);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_HEALING_RECEIVED, addhealth);
-    }
 
     return gain;
 }
@@ -15524,11 +15492,6 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
     // Proc auras on death - must be before aura/combat remove
     victim->ProcDamageAndSpell(NULL, PROC_FLAG_DEATH, PROC_FLAG_NONE, PROC_EX_NONE, 0, BASE_ATTACK, 0);
 
-    // update get killing blow achievements, must be done before setDeathState to be able to require auras on target
-    // and before Spirit of Redemption as it also removes auras
-    if (player)
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GET_KILLING_BLOWS, 1, 0, victim);
-
     // if talent known but not triggered (check priest class for speedup check)
     bool spiritOfRedemption = false;
     if (victim->GetTypeId() == TYPEID_PLAYER && victim->getClass() == CLASS_PRIEST)
@@ -15672,15 +15635,6 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
             else
                 bg->HandleKillUnit(victim->ToCreature(), player);
         }
-    }
-
-    // achievement stuff
-    if (victim->GetTypeId() == TYPEID_PLAYER)
-    {
-        if (GetTypeId() == TYPEID_UNIT)
-            victim->ToPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, GetEntry());
-        else if (GetTypeId() == TYPEID_PLAYER && victim != this)
-            victim->ToPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, ToPlayer()->GetTeam());
     }
 
     // Hook for OnPVPKill Event
