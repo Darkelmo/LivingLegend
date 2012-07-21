@@ -1478,8 +1478,6 @@ void LoadLootTemplates_Creature()
 
     if (count)
         sLog->outString(">> Loaded %u creature loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 creature loot templates. DB table `creature_loot_template` is empty");
 
     sLog->outString();
 }
@@ -1513,8 +1511,7 @@ void LoadLootTemplates_Disenchant()
 
     if (count)
         sLog->outString(">> Loaded %u disenchanting loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 disenchanting loot templates. DB table `disenchant_loot_template` is empty");
+
     sLog->outString();
 }
 
@@ -1538,8 +1535,6 @@ void LoadLootTemplates_Fishing()
 
     if (count)
         sLog->outString(">> Loaded %u fishing loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 fishing loot templates. DB table `fishing_loot_template` is empty");
 
     sLog->outString();
 }
@@ -1574,8 +1569,6 @@ void LoadLootTemplates_Gameobject()
 
     if (count)
         sLog->outString(">> Loaded %u gameobject loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 gameobject loot templates. DB table `gameobject_loot_template` is empty");
 
     sLog->outString();
 }
@@ -1667,8 +1660,6 @@ void LoadLootTemplates_Pickpocketing()
 
     if (count)
         sLog->outString(">> Loaded %u pickpocketing loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 pickpocketing loot templates. DB table `pickpocketing_loot_template` is empty");
 
     sLog->outString();
 }
@@ -1698,8 +1689,6 @@ void LoadLootTemplates_Prospecting()
 
     if (count)
         sLog->outString(">> Loaded %u prospecting loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 prospecting loot templates. DB table `prospecting_loot_template` is empty");
 
     sLog->outString();
 }
@@ -1760,8 +1749,6 @@ void LoadLootTemplates_Skinning()
 
     if (count)
         sLog->outString(">> Loaded %u skinning loot templates in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    else
-        sLog->outErrorDb(">> Loaded 0 skinning loot templates. DB table `skinning_loot_template` is empty");
 
     sLog->outString();
 }

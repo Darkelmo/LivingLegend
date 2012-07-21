@@ -6411,40 +6411,6 @@ void ObjectMgr::LoadGameObjectTemplate()
     sLog->outString();
 }
 
-void ObjectMgr::LoadExplorationBaseXP()
-{
-    uint32 oldMSTime = getMSTime();
-
-    QueryResult result = WorldDatabase.Query("SELECT level, basexp FROM exploration_basexp");
-
-    if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 BaseXP definitions. DB table `exploration_basexp` is empty.");
-        sLog->outString();
-        return;
-    }
-
-    uint32 count = 0;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        uint8 level  = fields[0].GetUInt8();
-        uint32 basexp = fields[1].GetInt32();
-        _baseXPTable[level] = basexp;
-        ++count;
-    }
-    while (result->NextRow());
-
-    sLog->outString(">> Loaded %u BaseXP definitions in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
-    sLog->outString();
-}
-
-uint32 ObjectMgr::GetBaseXP(uint8 level)
-{
-    return _baseXPTable[level] ? _baseXPTable[level] : 0;
-}
-
 uint32 ObjectMgr::GetXPForLevel(uint8 level) const
 {
     if (level < _playerXPperLevel.size())
@@ -6642,11 +6608,7 @@ void ObjectMgr::LoadReputationOnKill()
         "FROM creature_onkill_reputation");
 
     if (!result)
-    {
-        sLog->outErrorDb(">> Loaded 0 creature award reputation definitions. DB table `creature_onkill_reputation` is empty.");
-        sLog->outString();
         return;
-    }
 
     do
     {
@@ -7760,11 +7722,7 @@ void ObjectMgr::LoadTrainerSpell()
                                              "UNION SELECT * FROM npc_trainer WHERE spell > 0");
 
     if (!result)
-    {
-        sLog->outErrorDb(">>  Loaded 0 Trainers. DB table `npc_trainer` is empty!");
-        sLog->outString();
         return;
-    }
 
     uint32 count = 0;
 

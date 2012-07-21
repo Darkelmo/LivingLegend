@@ -6649,25 +6649,7 @@ void Player::CheckAreaExploreAndOutdoor()
     uint32 currFields = GetUInt32Value(PLAYER_EXPLORED_ZONES_1 + offset);
 
     if (!(currFields & val))
-    {
         SetUInt32Value(PLAYER_EXPLORED_ZONES_1 + offset, (uint32)(currFields | val));
-
-        AreaTableEntry const* areaEntry = GetAreaEntryByAreaFlagAndMap(areaFlag, GetMapId());
-        if (!areaEntry)
-        {
-            sLog->outError("Player %u discovered unknown area (x: %f y: %f z: %f map: %u", GetGUIDLow(), GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-            return;
-        }
-
-        if (areaEntry->area_level > 0)
-        {
-            uint32 area = areaEntry->ID;
-
-            SendExplorationExperience(area, 0);
-
-            sLog->outDetail("Player %u discovered a new area: %u", GetGUIDLow(), area);
-        }
-    }
 }
 
 uint32 Player::TeamForRace(uint8 race)
@@ -19286,14 +19268,6 @@ void Player::SendAutoRepeatCancel(Unit* target)
 {
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, target->GetPackGUID().size());
     data.append(target->GetPackGUID());                     // may be it's target guid
-    GetSession()->SendPacket(&data);
-}
-
-void Player::SendExplorationExperience(uint32 Area, uint32 Experience)
-{
-    WorldPacket data(SMSG_EXPLORATION_EXPERIENCE, 8);
-    data << uint32(Area);
-    data << uint32(Experience);
     GetSession()->SendPacket(&data);
 }
 

@@ -871,7 +871,6 @@ class ObjectMgr
 
         void LoadPlayerInfo();
         void LoadPetLevelInfo();
-        void LoadExplorationBaseXP();
         void LoadPetNames();
         void LoadPetNumber();
         void LoadCorpses();
@@ -896,7 +895,6 @@ class ObjectMgr
         void AddSpellToTrainer(uint32 entry, uint32 spell, uint32 spellCost, uint32 reqSkill, uint32 reqSkillValue, uint32 reqLevel);
 
         std::string GeneratePetName(uint32 entry);
-        uint32 GetBaseXP(uint8 level);
         uint32 GetXPForLevel(uint8 level) const;
 
         int32 GetFishingBaseSkillLevel(uint32 entry) const
@@ -1205,9 +1203,6 @@ class ObjectMgr
 
         typedef std::vector<uint32> PlayerXPperLevel;       // [level]
         PlayerXPperLevel _playerXPperLevel;
-
-        typedef std::map<uint32, uint32> BaseXPContainer;          // [area level][base xp]
-        BaseXPContainer _baseXPTable;
 
         typedef std::map<uint32, int32> FishingBaseSkillContainer; // [areaId][base skill level]
         FishingBaseSkillContainer _fishingBaseForAreaStore;

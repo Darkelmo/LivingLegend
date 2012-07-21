@@ -1070,9 +1070,6 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading Player Create Data...");
     sObjectMgr->LoadPlayerInfo();
 
-    sLog->outString("Loading Exploration BaseXP Data...");
-    sObjectMgr->LoadExplorationBaseXP();
-
     sLog->outString("Loading Pet Name Parts...");
     sObjectMgr->LoadPetNames();
 

@@ -1913,7 +1913,6 @@ class Player : public Unit, public GridObject<Player>
         void SendAttackSwingNotInRange();
         void SendAttackSwingBadFacingAttack();
         void SendAutoRepeatCancel(Unit* target);
-        void SendExplorationExperience(uint32 Area, uint32 Experience);
 
         void SendDungeonDifficulty(bool IsInGroup);
         void SendRaidDifficulty(bool IsInGroup, int32 forcedDifficulty = -1);
